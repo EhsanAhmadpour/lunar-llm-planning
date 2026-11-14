@@ -8,4 +8,4 @@
 # note:   free text for your own records
 mode: full
 models: "haiku-think"
-note: "check: Haiku 5.5 with thinking ON via OpenRouter, approved by Ehsan on 14 Nov 2026"
+note: "check 2: Haiku 5.5 thinking ON with a 32000-token reply cap, approved by Ehsan on 14 Nov 2026"
