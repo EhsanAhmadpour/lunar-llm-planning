@@ -1,0 +1,8 @@
+(move rover1 w1 w4 b3 b2)
+(move rover1 w4 w2 b2 b1)
+(take-image rover1 w2)
+(move rover1 w2 w3 b1 b0)
+(recharge rover1 w3 b0 b3)
+(collect-sample rover1 w3 b3 b2)
+(send-sample rover1 w3 w3)
+(send-image rover1 w2 w3)

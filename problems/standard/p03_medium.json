@@ -1,0 +1,50 @@
+{
+  "name": "p03_medium",
+  "size": "medium",
+  "seed_base": 2026,
+  "attempt": 6,
+  "rovers": 2,
+  "waypoints": 8,
+  "goals": 4,
+  "battery_levels": 5,
+  "sunlit": [
+    "w2"
+  ],
+  "comm_visible": [
+    "w6",
+    "w8"
+  ],
+  "equipment": {
+    "rover1": [
+      "sampler"
+    ],
+    "rover2": [
+      "camera"
+    ]
+  },
+  "sample_goals": [
+    "w2",
+    "w6"
+  ],
+  "image_goals": [
+    "w3",
+    "w4"
+  ],
+  "checks": {
+    "solvable": true,
+    "reference_plan_has_recharge": true,
+    "comm_minority": true,
+    "sunlit_minority": true,
+    "terrain_matters": true,
+    "not_all_rovers_have_all_instruments": true
+  },
+  "reference": {
+    "search": "astar",
+    "heuristic": "lmcut",
+    "optimal": true,
+    "plan_length": 22,
+    "time_s": 6.106,
+    "recharges": 3,
+    "optimal_search_timeout_s": null
+  }
+}

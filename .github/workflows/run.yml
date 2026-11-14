@@ -1,0 +1,91 @@
+name: run
+
+# Runs the baseline, the LLM runner and the analysis, then commits results/ and figures/.
+# Trigger: push that changes runs/request.yaml, or start it manually from the Actions tab.
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "runs/request.yaml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: lunar-run
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Read runs/request.yaml
+        id: req
+        run: |
+          python - <<'PY'
+          import os, re, yaml
+          req = yaml.safe_load(open("runs/request.yaml")) or {}
+          mode = str(req.get("mode", "estimate"))
+          models = str(req.get("models") or "")
+          assert mode in ("smoke", "estimate", "full"), f"bad mode {mode!r}"
+          assert re.fullmatch(r"[A-Za-z0-9_.,\-]*", models), "models may only contain letters, digits, _ . , -"
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              f.write(f"mode={mode}\nmodels={models}\n")
+          print("mode:", mode, "| models:", models or "(all)")
+          PY
+
+      - name: Baseline (pyperplan + our validator)
+        run: python -m src.run_baseline
+
+      - name: Run LLM experiment
+        id: runner
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          MODE: ${{ steps.req.outputs.mode }}
+          MODELS: ${{ steps.req.outputs.models }}
+        run: |
+          ARGS=""
+          if [ -n "$MODELS" ]; then ARGS="--models $MODELS"; fi
+          case "$MODE" in
+            estimate) FLAG="--estimate" ;;
+            smoke)    FLAG="--smoke" ;;
+            full)     FLAG="" ;;
+          esac
+          set +e
+          python -m src.run_llm $FLAG $ARGS 2>&1 | tee results/last_run.log
+          rc=${PIPESTATUS[0]}
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Analysis
+        run: python -m src.analyze
+
+      - name: Commit results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add results figures
+          if git diff --cached --quiet; then
+            echo "nothing to commit"
+          else
+            git commit -m "Update results (run: ${{ steps.req.outputs.mode }})"
+            git pull --rebase
+            git push
+          fi
+
+      - name: Fail if the runner failed (budget stop, rc=2, is not a failure)
+        if: steps.runner.outputs.rc != '0' && steps.runner.outputs.rc != '2'
+        run: |
+          echo "runner exited with code ${{ steps.runner.outputs.rc }} - see results/last_run.log"
+          exit 1

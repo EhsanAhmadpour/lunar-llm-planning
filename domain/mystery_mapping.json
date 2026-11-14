@@ -1,0 +1,79 @@
+{
+  "types": {
+    "level": "fosap",
+    "rover": "lubud",
+    "waypoint": "maga"
+  },
+  "predicates": {
+    "at": "zude",
+    "battery": "burobez",
+    "below-full": "kofuk",
+    "can-traverse": "zedurep",
+    "comm-visible": "dubugo",
+    "full-level": "vinu",
+    "has-camera": "keve",
+    "has-sampler": "dukul",
+    "holding-image": "niraduv",
+    "holding-sample": "foma",
+    "image-sent": "vuril",
+    "image-target": "nuvoda",
+    "next-lower": "tabi",
+    "sample-sent": "zokosin",
+    "sample-site": "fudov",
+    "store-empty": "femo",
+    "sunlit": "deno"
+  },
+  "actions": {
+    "collect-sample": "zozum",
+    "move": "sogef",
+    "recharge": "sebo",
+    "send-image": "kibel",
+    "send-sample": "rifuraz",
+    "take-image": "vumomos"
+  },
+  "objects": {
+    "b0": "beded",
+    "b1": "rada",
+    "b2": "dirade",
+    "b3": "silud",
+    "b4": "zonod",
+    "rover1": "ditit",
+    "rover2": "pagut",
+    "rover3": "bukati",
+    "w1": "lepu",
+    "w10": "sere",
+    "w11": "tegut",
+    "w12": "binir",
+    "w2": "nilag",
+    "w3": "gigo",
+    "w4": "zaniva",
+    "w5": "menes",
+    "w6": "dono",
+    "w7": "tefer",
+    "w8": "veru",
+    "w9": "lepufat"
+  },
+  "variables": {
+    "from": "duteme",
+    "l": "bigi",
+    "l1": "lipozet",
+    "l2": "nuzup",
+    "lfull": "pepun",
+    "r": "raven",
+    "site": "tapalu",
+    "target": "vapak",
+    "to": "vapo",
+    "w": "niru"
+  },
+  "domain": {
+    "lunar": "tinu"
+  },
+  "problems": {
+    "p01_small": "petu",
+    "p02_small": "pezod",
+    "p03_medium": "nideg",
+    "p04_medium": "kavetif",
+    "p05_large": "gamos",
+    "p06_large": "fopog"
+  }
+}

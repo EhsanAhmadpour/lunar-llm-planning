@@ -1,0 +1,13 @@
+variant,problem,size,search,heuristic,optimal,plan_length,time_s,valid,error
+standard,p01_small,small,astar,lmcut,True,8,0.019,True,
+standard,p02_small,small,astar,lmcut,True,8,0.019,True,
+standard,p03_medium,medium,astar,lmcut,True,22,5.664,True,
+standard,p04_medium,medium,astar,lmcut,True,23,14.996,True,
+standard,p05_large,large,gbf,hff,False,36,4.137,True,
+standard,p06_large,large,gbf,hff,False,42,0.452,True,
+mystery,p01_small,small,astar,lmcut,True,8,0.014,True,
+mystery,p02_small,small,astar,lmcut,True,8,0.01,True,
+mystery,p03_medium,medium,astar,lmcut,True,22,5.214,True,
+mystery,p04_medium,medium,astar,lmcut,True,23,14.824,True,
+mystery,p05_large,large,gbf,hff,False,38,0.467,True,
+mystery,p06_large,large,gbf,hff,False,47,6.598,True,

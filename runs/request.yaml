@@ -1,0 +1,11 @@
+# Editing and pushing this file starts the "run" GitHub workflow
+# (or start it by hand from the Actions tab).
+#
+# mode:   estimate  -> print the cost table only (free)
+#         smoke     -> one cheap call to check the API key / model id works
+#         full      -> the whole experiment (stops at the budget in config/experiment.yaml)
+# models: optional, comma-separated labels from config/models.yaml (empty = all)
+# note:   free text for your own records
+mode: estimate
+models: ""
+note: "initial request: cost estimate only"

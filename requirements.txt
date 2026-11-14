@@ -1,0 +1,5 @@
+pyperplan>=2.1
+requests
+pyyaml
+matplotlib
+pytest

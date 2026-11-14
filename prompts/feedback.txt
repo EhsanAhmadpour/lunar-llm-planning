@@ -1,0 +1,5 @@
+A plan checker found a problem with your plan:
+
+{{REPORT}}
+
+Please reply with a corrected, complete plan (all steps from the beginning, not only the fix). Use the same format: only a fenced block that starts with ```plan and ends with ```, one ground action per line.

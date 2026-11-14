@@ -1,0 +1,46 @@
+# Models to test through OpenRouter.
+#
+# IMPORTANT: the ids below are PLACEHOLDERS. Before a real run, confirm every
+# id (and its price) against OpenRouter's live model list: https://openrouter.ai/models
+# (a wrong id makes the API return an error and nothing is charged).
+#
+# Fields
+#   id         OpenRouter model id, e.g. "vendor/model-name"
+#   label      short folder-safe name used in results/ (letters, digits, - _ only)
+#   tier       cheap | strong  (only used for grouping in the tables)
+#   repeats    how many independent runs per problem (cheap models: more repeats)
+#   price_in   USD per 1 million input (prompt) tokens   -- edit to real prices
+#   price_out  USD per 1 million output (completion) tokens
+#   max_tokens hard cap on the reply length (also drives the worst-case cost)
+#   provider   openrouter (default) | manual  (manual = run by hand, see README)
+models:
+  - id: "openai/gpt-4o-mini"            # PLACEHOLDER - confirm
+    label: cheap-a
+    tier: cheap
+    repeats: 3
+    price_in: 0.15
+    price_out: 0.60
+    max_tokens: 2000
+  - id: "google/gemini-2.0-flash-001"   # PLACEHOLDER - confirm
+    label: cheap-b
+    tier: cheap
+    repeats: 3
+    price_in: 0.10
+    price_out: 0.40
+    max_tokens: 2000
+  - id: "anthropic/claude-sonnet-4.5"   # PLACEHOLDER - confirm
+    label: strong-a
+    tier: strong
+    repeats: 1
+    price_in: 3.00
+    price_out: 15.00
+    max_tokens: 4000
+  # A model that is not on OpenRouter can be run by hand:
+  # - id: "my-local-model"
+  #   label: manual-a
+  #   tier: cheap
+  #   repeats: 1
+  #   price_in: 0
+  #   price_out: 0
+  #   max_tokens: 4000
+  #   provider: manual
