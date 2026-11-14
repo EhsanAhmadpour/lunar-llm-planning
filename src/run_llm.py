@@ -26,7 +26,9 @@ import json
 import math
 import os
 import sys
+import threading
 import time
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -130,8 +132,8 @@ def render_feedback(validation, root=ROOT):
 
 
 def est_tokens(messages):
-    """Rough token count: characters / 4."""
-    return math.ceil(sum(len(m["content"]) for m in messages) / 4)
+    """Rough token count: characters / 3 (PDDL is symbol-heavy, so this errs on the high side)."""
+    return math.ceil(sum(len(m["content"]) for m in messages) / 3)
 
 
 # --------------------------------------------------------------------------
@@ -142,6 +144,8 @@ class SpendTracker:
         self.path = Path(results_dir) / "spend.json"
         self.raw = Path(results_dir) / "raw"
         self.budget = float(budget_usd)
+        self.lock = threading.Lock()   # several models may run at the same time (--parallel)
+        self.reserved = 0.0            # worst-case cost of the calls that are in flight right now
         if self.path.exists():
             data = json.loads(self.path.read_text())
             self.total = float(data.get("total_usd", 0.0))
@@ -162,12 +166,25 @@ class SpendTracker:
                 f"would exceed the budget ${self.budget:.2f}. Raise budget_usd in config/experiment.yaml "
                 f"to continue; saved results are kept and the run can be resumed.")
 
+    def reserve(self, worst_case):
+        """Budget check for one call that is about to start. Calls already in flight are
+        counted at their worst case, so parallel models can never overshoot the budget together."""
+        with self.lock:
+            self.check(worst_case + self.reserved)
+            self.reserved += worst_case
+
+    def release(self, worst_case):
+        with self.lock:
+            self.reserved = max(0.0, self.reserved - worst_case)
+
     def add(self, cost):
-        self.total += float(cost)
-        self.calls += 1
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        self.path.write_text(json.dumps(
-            {"total_usd": round(self.total, 6), "n_calls": self.calls, "budget_usd": self.budget}, indent=2) + "\n")
+        with self.lock:
+            self.total += float(cost)
+            self.calls += 1
+            self.path.parent.mkdir(parents=True, exist_ok=True)
+            self.path.write_text(json.dumps(
+                {"total_usd": round(self.total, 6), "n_calls": self.calls, "budget_usd": self.budget},
+                indent=2) + "\n")
 
 
 def worst_case_cost(model, messages):
@@ -321,13 +338,17 @@ def run_episode(ctx, model, inst, rep):
         if pend is None:
             return calls
         rnd, messages = pend
-        ctx.tracker.check(worst_case_cost(model, messages))
-        out = call_openrouter(model, messages, ctx.api_key, ctx.exp["temperature"],
-                              ctx.exp["request_timeout_s"], ctx.exp["max_retries"],
-                              post=ctx.post, sleep=ctx.sleep)
-        save_record(ctx, model, inst, rep, rnd, messages, out["text"], out["usage"], out["cost"],
-                    out["cost_source"], out["returned_model"])
-        ctx.tracker.add(out["cost"])
+        worst = worst_case_cost(model, messages)
+        ctx.tracker.reserve(worst)
+        try:
+            out = call_openrouter(model, messages, ctx.api_key, ctx.exp["temperature"],
+                                  ctx.exp["request_timeout_s"], ctx.exp["max_retries"],
+                                  post=ctx.post, sleep=ctx.sleep)
+            save_record(ctx, model, inst, rep, rnd, messages, out["text"], out["usage"], out["cost"],
+                        out["cost_source"], out["returned_model"])
+            ctx.tracker.add(out["cost"])
+        finally:
+            ctx.tracker.release(worst)
         calls += 1
         res = validate_response(inst, out["text"])
         ctx.log(f"  {model['label']} {inst.variant}/{inst.name} rep{rep} round{rnd}: "
@@ -335,27 +356,50 @@ def run_episode(ctx, model, inst, rep):
                 f"(cost ${out['cost']:.4f}, total ${ctx.tracker.total:.4f})")
 
 
-def run_all(ctx, models, instances, repeats_override=None):
-    n_calls = 0
-    failures = 0
-    for model in models:
-        if model["provider"] != "openrouter":
-            continue
-        reps = repeats_override or model["repeats"]
-        for inst, rep in [(i, r) for i in instances for r in range(reps)]:
-                try:
-                    n_calls += run_episode(ctx, model, inst, rep)
-                except ModelUnavailable as exc:
-                    ctx.log(f"  SKIPPING MODEL {model['label']}: {exc}")
-                    break
-                except ApiError as exc:
-                    failures += 1
-                    ctx.log(f"  skipped {model['label']} {inst.variant}/{inst.name} rep{rep}: {exc}")
-                    if failures >= 5:
-                        raise FatalApiError("5 episodes failed in a row; stopping")
-                else:
-                    failures = 0
+def run_model(ctx, model, instances, repeats_override=None, stop=None):
+    """All episodes of one model. Returns the number of API calls made."""
+    n_calls = failures = 0
+    reps = repeats_override or model["repeats"]
+    for inst, rep in [(i, r) for i in instances for r in range(reps)]:
+        if stop is not None and stop.is_set():   # another model hit the budget or a fatal error
+            break
+        try:
+            n_calls += run_episode(ctx, model, inst, rep)
+        except ModelUnavailable as exc:
+            ctx.log(f"  SKIPPING MODEL {model['label']}: {exc}")
+            break
+        except ApiError as exc:
+            failures += 1
+            ctx.log(f"  skipped {model['label']} {inst.variant}/{inst.name} rep{rep}: {exc}")
+            if failures >= 5:
+                ctx.log(f"  SKIPPING MODEL {model['label']}: 5 episodes failed in a row")
+                break
+        else:
+            failures = 0
     return n_calls
+
+
+def run_all(ctx, models, instances, repeats_override=None, parallel=1):
+    """Run every OpenRouter model. parallel > 1 runs that many MODELS at the same time
+    (each model still does its own calls one after the other)."""
+    models = [m for m in models if m["provider"] == "openrouter"]
+    if parallel <= 1 or len(models) <= 1:
+        return sum(run_model(ctx, m, instances, repeats_override) for m in models)
+    stop = threading.Event()
+
+    def work(model):
+        try:
+            return run_model(ctx, model, instances, repeats_override, stop)
+        except (BudgetExceeded, FatalApiError):
+            stop.set()
+            raise
+
+    with ThreadPoolExecutor(max_workers=parallel) as pool:
+        futures = [pool.submit(work, m) for m in models]
+    errors = [f.exception() for f in futures if f.exception() is not None]
+    if errors:
+        raise errors[0]
+    return sum(f.result() for f in futures)
 
 
 # --------------------------------------------------------------------------
@@ -419,6 +463,7 @@ def main(argv=None):
     add_filter_args(ap)
     ap.add_argument("--estimate", action="store_true", help="print cost estimate, no API calls")
     ap.add_argument("--smoke", action="store_true", help="cheapest model, 1 small problem, round 0 only")
+    ap.add_argument("--parallel", type=int, default=1, help="how many models to run at the same time")
     args = ap.parse_args(argv)
     exp, models = load_config(args.config_dir)
     models, instances = apply_filters(args, exp, models)
@@ -447,7 +492,7 @@ def main(argv=None):
     ctx = Context(results_dir=results_dir, exp=exp, max_rounds=max_rounds, api_key=key,
                   tracker=SpendTracker(results_dir, exp["budget_usd"]))
     try:
-        n = run_all(ctx, models, instances, repeats)
+        n = run_all(ctx, models, instances, repeats, parallel=args.parallel)
     except BudgetExceeded as exc:
         print(str(exc))
         return 2

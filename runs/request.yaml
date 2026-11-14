@@ -6,6 +6,6 @@
 #         full      -> the whole experiment (stops at the budget in config/experiment.yaml)
 # models: optional, comma-separated labels from config/models.yaml (empty = all)
 # note:   free text for your own records
-mode: estimate
+mode: smoke
 models: ""
-note: "initial request: cost estimate only"
+note: "test call approved by Ehsan on 14 Nov 2026"

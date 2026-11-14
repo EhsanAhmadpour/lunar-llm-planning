@@ -60,7 +60,7 @@ jobs:
           case "$MODE" in
             estimate) FLAG="--estimate" ;;
             smoke)    FLAG="--smoke" ;;
-            full)     FLAG="" ;;
+            full)     FLAG="--parallel 5" ;;
           esac
           set +e
           python -m src.run_llm $FLAG $ARGS 2>&1 | tee results/last_run.log
