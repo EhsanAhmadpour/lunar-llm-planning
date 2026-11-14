@@ -1,0 +1,8 @@
+# Settings for the FREE pilot (Claude models run by hand through the manual route, no API cost).
+budget_usd: 0
+max_feedback_rounds: 3
+temperature: 0
+problems: all
+variants: [standard]
+request_timeout_s: 120
+max_retries: 0

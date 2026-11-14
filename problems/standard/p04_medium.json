@@ -1,19 +1,20 @@
 {
   "name": "p04_medium",
   "size": "medium",
+  "profile": "v2",
   "seed_base": 2026,
-  "attempt": 1,
+  "attempt": 700,
   "rovers": 2,
-  "waypoints": 8,
-  "goals": 4,
-  "battery_levels": 5,
+  "waypoints": 11,
+  "goals": 7,
+  "battery_levels": 4,
   "sunlit": [
-    "w5",
-    "w7",
-    "w8"
+    "w3",
+    "w7"
   ],
   "comm_visible": [
-    "w6"
+    "w6",
+    "w11"
   ],
   "equipment": {
     "rover1": [
@@ -25,11 +26,14 @@
   },
   "sample_goals": [
     "w5",
-    "w8"
+    "w7",
+    "w9"
   ],
   "image_goals": [
+    "w2",
+    "w3",
     "w4",
-    "w7"
+    "w8"
   ],
   "checks": {
     "solvable": true,
@@ -40,12 +44,12 @@
     "not_all_rovers_have_all_instruments": true
   },
   "reference": {
-    "search": "astar",
-    "heuristic": "lmcut",
-    "optimal": true,
-    "plan_length": 23,
-    "time_s": 15.463,
-    "recharges": 2,
-    "optimal_search_timeout_s": null
+    "search": "gbf",
+    "heuristic": "hff",
+    "optimal": false,
+    "plan_length": 57,
+    "time_s": 9.995,
+    "recharges": 11,
+    "optimal_search_timeout_s": 60.0
   }
 }

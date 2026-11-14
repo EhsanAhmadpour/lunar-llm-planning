@@ -72,13 +72,14 @@ def test_generator_is_deterministic(tmp_path):
 def test_generated_problem_requirements(meta_file):
     meta = json.loads(meta_file.read_text())
     size = meta["size"]
-    cfg = G.SIZES[size]
+    cfg = G.PROFILES[meta.get("profile", "v1")][size]
     assert (meta["rovers"], meta["waypoints"], meta["goals"], meta["battery_levels"]) == (
         cfg["rovers"], cfg["waypoints"], cfg["goals"], cfg["levels"])
     n = meta["waypoints"]
     assert 0 < len(meta["comm_visible"]) and 2 * len(meta["comm_visible"]) < n   # (c)
     assert 0 < len(meta["sunlit"]) and 2 * len(meta["sunlit"]) < n               # (c)
-    assert meta["reference"]["recharges"] >= 1                                    # (b)
+    assert meta["reference"]["recharges"] >= max(1, cfg["min_recharges"])         # (b)
+    assert meta["reference"]["plan_length"] >= cfg["min_len"]
     ref = read_text(ROOT / "problems" / "reference_plans" / f"{meta['name']}.plan")
     assert ref.count("(recharge ") == meta["reference"]["recharges"]
     if cfg["rovers"] > 1:                                                         # (e)

@@ -1,28 +1,31 @@
 {
   "name": "p05_large",
   "size": "large",
+  "profile": "v2",
   "seed_base": 2026,
-  "attempt": 6,
+  "attempt": 326,
   "rovers": 3,
-  "waypoints": 12,
-  "goals": 6,
-  "battery_levels": 5,
+  "waypoints": 14,
+  "goals": 9,
+  "battery_levels": 4,
   "sunlit": [
+    "w1",
+    "w8",
     "w9",
     "w12"
   ],
   "comm_visible": [
-    "w6",
-    "w10",
-    "w12"
+    "w1",
+    "w5",
+    "w11",
+    "w14"
   ],
   "equipment": {
     "rover1": [
       "sampler"
     ],
     "rover2": [
-      "camera",
-      "sampler"
+      "camera"
     ],
     "rover3": [
       "camera",
@@ -30,14 +33,17 @@
     ]
   },
   "sample_goals": [
-    "w2",
     "w5",
-    "w8"
+    "w8",
+    "w9",
+    "w13"
   ],
   "image_goals": [
-    "w3",
-    "w7",
-    "w9"
+    "w2",
+    "w6",
+    "w10",
+    "w11",
+    "w12"
   ],
   "checks": {
     "solvable": true,
@@ -51,9 +57,9 @@
     "search": "gbf",
     "heuristic": "hff",
     "optimal": false,
-    "plan_length": 36,
-    "time_s": 4.133,
-    "recharges": 4,
-    "optimal_search_timeout_s": 120
+    "plan_length": 61,
+    "time_s": 11.223,
+    "recharges": 13,
+    "optimal_search_timeout_s": 60.0
   }
 }

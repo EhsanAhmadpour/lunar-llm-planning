@@ -187,8 +187,11 @@ def build_bad_plans(std_problem):
     plans["state"] = f"(take-image {r_c} {base})"
     # equipment (+ state): rover without a camera tries to take a picture
     r_nc = next((r for r in rovers if ("has-camera", (r,)) not in init), None)
+    r_ns = next((r for r in rovers if ("has-sampler", (r,)) not in init), None)
     if r_nc:
         plans["equipment"] = f"(take-image {r_nc} {base})"
+    elif r_ns:  # or: rover without a sampler tries to collect a sample
+        plans["equipment"] = f"(collect-sample {r_ns} {base} {top} {lower})"
     # goal not reached: only the first reference step
     ref = (ROOT / "problems" / "reference_plans" / f"{std_problem}.plan").read_text().splitlines()
     plans["goal_not_reached"] = ref[0]
@@ -219,9 +222,15 @@ def test_mystery_messages_use_mystery_names(mapping):
     assert r["error_category"] == "syntax"
 
 
-@pytest.mark.parametrize("name", ["p01_small", "p02_small", "p03_medium", "p04_medium"])
+def _optimal_reference_problems():
+    import json
+    metas = [json.loads(f.read_text()) for f in sorted((ROOT / "problems" / "standard").glob("*.json"))]
+    return [m["name"] for m in metas if m["reference"]["optimal"]]
+
+
+@pytest.mark.parametrize("name", _optimal_reference_problems())
 def test_dropping_any_step_of_an_optimal_plan_breaks_it(name):
-    """These four reference plans are optimal, so no step is redundant."""
+    """Reference plans marked optimal in the metadata have no redundant step."""
     inst = next(i for i in list_instances(["standard"]) if i.name == name)
     steps = (ROOT / "problems" / "reference_plans" / f"{name}.plan").read_text().splitlines()
     for k in range(len(steps)):

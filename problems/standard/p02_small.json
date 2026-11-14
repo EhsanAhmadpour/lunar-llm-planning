@@ -1,19 +1,19 @@
 {
   "name": "p02_small",
   "size": "small",
+  "profile": "v2",
   "seed_base": 2026,
-  "attempt": 0,
+  "attempt": 141,
   "rovers": 1,
-  "waypoints": 5,
-  "goals": 2,
+  "waypoints": 7,
+  "goals": 4,
   "battery_levels": 4,
   "sunlit": [
     "w2",
-    "w3"
+    "w4"
   ],
   "comm_visible": [
-    "w3",
-    "w4"
+    "w7"
   ],
   "equipment": {
     "rover1": [
@@ -22,10 +22,12 @@
     ]
   },
   "sample_goals": [
-    "w3"
+    "w2",
+    "w4"
   ],
   "image_goals": [
-    "w2"
+    "w3",
+    "w5"
   ],
   "checks": {
     "solvable": true,
@@ -39,9 +41,9 @@
     "search": "astar",
     "heuristic": "lmcut",
     "optimal": true,
-    "plan_length": 8,
-    "time_s": 0.011,
-    "recharges": 1,
+    "plan_length": 19,
+    "time_s": 0.177,
+    "recharges": 3,
     "optimal_search_timeout_s": null
   }
 }

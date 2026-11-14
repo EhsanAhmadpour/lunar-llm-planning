@@ -1,0 +1,112 @@
+You are a planning system. Below are a PDDL domain and a PDDL problem. Find a plan that reaches the goal.
+
+Rules for your answer:
+- Output ONLY the plan, inside a fenced block that starts with ```plan and ends with ```.
+- Write one ground action per line in PDDL syntax, for example: (action-name object1 object2)
+- Use only the action names and object names that appear in the domain and problem. The names are just labels; rely only on the PDDL definitions, not on what the names might suggest.
+- Do not write anything else.
+
+DOMAIN:
+(define (domain petu)
+  (:requirements :strips :typing)
+  (:types lubud maga fosap)
+  (:predicates
+    (zude ?tapalu - lubud ?tinu - maga)
+    (zedurep ?tapalu - lubud ?bigi - maga ?niru - maga)
+    (burobez ?tapalu - lubud ?lipozet - fosap)
+    (tabi ?nuzup - fosap ?pepun - fosap)
+    (kofuk ?lipozet - fosap)
+    (vinu ?lipozet - fosap)
+    (deno ?tinu - maga)
+    (dubugo ?tinu - maga)
+    (fudov ?tinu - maga)
+    (nuvoda ?tinu - maga)
+    (dukul ?tapalu - lubud)
+    (keve ?tapalu - lubud)
+    (femo ?tapalu - lubud)
+    (foma ?tapalu - lubud ?tinu - maga)
+    (niraduv ?tapalu - lubud ?tinu - maga)
+    (zokosin ?tinu - maga)
+    (vuril ?tinu - maga))
+
+  (:action sogef
+    :parameters (?tapalu - lubud ?bigi - maga ?niru - maga ?nuzup - fosap ?pepun - fosap)
+    :precondition (and (zude ?tapalu ?bigi) (zedurep ?tapalu ?bigi ?niru)
+                       (burobez ?tapalu ?nuzup) (tabi ?nuzup ?pepun))
+    :effect (and (zude ?tapalu ?niru) (not (zude ?tapalu ?bigi))
+                 (burobez ?tapalu ?pepun) (not (burobez ?tapalu ?nuzup))))
+
+  (:action sebo
+    :parameters (?tapalu - lubud ?tinu - maga ?lipozet - fosap ?raven - fosap)
+    :precondition (and (zude ?tapalu ?tinu) (deno ?tinu) (burobez ?tapalu ?lipozet)
+                       (kofuk ?lipozet) (vinu ?raven))
+    :effect (and (not (burobez ?tapalu ?lipozet)) (burobez ?tapalu ?raven)))
+
+  (:action zozum
+    :parameters (?tapalu - lubud ?tinu - maga ?nuzup - fosap ?pepun - fosap)
+    :precondition (and (zude ?tapalu ?tinu) (fudov ?tinu) (dukul ?tapalu)
+                       (femo ?tapalu) (burobez ?tapalu ?nuzup) (tabi ?nuzup ?pepun))
+    :effect (and (foma ?tapalu ?tinu) (not (femo ?tapalu))
+                 (burobez ?tapalu ?pepun) (not (burobez ?tapalu ?nuzup))))
+
+  (:action vumomos
+    :parameters (?tapalu - lubud ?tinu - maga)
+    :precondition (and (zude ?tapalu ?tinu) (nuvoda ?tinu) (keve ?tapalu))
+    :effect (niraduv ?tapalu ?tinu))
+
+  (:action rifuraz
+    :parameters (?tapalu - lubud ?vapak - maga ?tinu - maga)
+    :precondition (and (foma ?tapalu ?vapak) (zude ?tapalu ?tinu) (dubugo ?tinu))
+    :effect (and (zokosin ?vapak) (femo ?tapalu)
+                 (not (foma ?tapalu ?vapak))))
+
+  (:action kibel
+    :parameters (?tapalu - lubud ?vapo - maga ?tinu - maga)
+    :precondition (and (niraduv ?tapalu ?vapo) (zude ?tapalu ?tinu) (dubugo ?tinu))
+    :effect (and (vuril ?vapo) (not (niraduv ?tapalu ?vapo)))))
+
+PROBLEM:
+(define (problem pezod)
+  (:domain petu)
+  (:objects
+    zonod - lubud
+    bukati gigo zaniva menes dono tefer veru - maga
+    beded rada dirade silud - fosap)
+  (:init
+    (zude zonod bukati) (burobez zonod silud) (femo zonod)
+    (keve zonod)
+    (dukul zonod)
+    (zedurep zonod bukati gigo)
+    (zedurep zonod bukati tefer)
+    (zedurep zonod gigo bukati)
+    (zedurep zonod gigo zaniva)
+    (zedurep zonod gigo menes)
+    (zedurep zonod gigo dono)
+    (zedurep zonod zaniva gigo)
+    (zedurep zonod menes gigo)
+    (zedurep zonod menes tefer)
+    (zedurep zonod dono gigo)
+    (zedurep zonod dono veru)
+    (zedurep zonod tefer bukati)
+    (zedurep zonod tefer menes)
+    (zedurep zonod veru gigo)
+    (zedurep zonod veru dono)
+    (tabi rada beded)
+    (tabi dirade rada)
+    (tabi silud dirade)
+    (kofuk beded)
+    (kofuk rada)
+    (kofuk dirade)
+    (vinu silud)
+    (deno gigo)
+    (deno dono)
+    (dubugo menes)
+    (dubugo tefer)
+    (fudov gigo)
+    (fudov dono)
+    (fudov veru)
+    (nuvoda zaniva)
+    (nuvoda menes)
+    (nuvoda tefer)
+  )
+  (:goal (and (zokosin dono) (zokosin veru) (vuril menes) (vuril tefer))))

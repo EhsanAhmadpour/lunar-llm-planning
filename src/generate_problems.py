@@ -1,6 +1,11 @@
 """Generate the six standard lunar-rover problems (2 per size), deterministically.
 
-Usage:  python -m src.generate_problems [--seed 2026] [--optimal-timeout 120]
+Usage:  python -m src.generate_problems [--seed 2026] [--optimal-timeout 120] [--difficulty v2]
+
+Difficulty profiles (see PROFILES below): "v1" is the first, easy set used in pilot
+round 1; later profiles were made harder after the pilot showed v1 was too easy
+(see pilot/README.md). The default is DEFAULT_PROFILE; the committed problems say
+which profile made them in their .json metadata.
 
 How it works (plain English):
   1. For each problem we draw a random lunar map with a seeded random number
@@ -17,19 +22,40 @@ from pathlib import Path
 from .pddl_utils import ROOT, plan_to_text
 from .planning import ensure_fixed_hash_seed, run_search, solve_best
 
-# size -> (rovers, waypoints, goals, battery levels)
-SIZES = {
-    "small": dict(rovers=1, waypoints=5, goals=2, levels=4),
-    "medium": dict(rovers=2, waypoints=8, goals=4, levels=5),
-    "large": dict(rovers=3, waypoints=12, goals=6, levels=5),
+# Difficulty profiles. For each size:
+#   rovers, waypoints, goals, levels   the size of the problem (levels = battery levels, b0 = empty)
+#   two_way, one_way                   chance that a terrain edge is two-way / one-way for a rover
+#                                      (the rest is blocked for that rover)
+#   extra_div                          extra edges on top of the spanning tree = max(2, waypoints // extra_div)
+#   minor_cap                          at most this many sunlit waypoints, and this many comm-visible ones
+#   min_recharges, min_len             the reference plan must contain at least this many recharges / steps
+PROFILES = {
+    "v1": {
+        "small": dict(rovers=1, waypoints=5, goals=2, levels=4, two_way=0.65, one_way=0.20, extra_div=2,
+                      minor_cap=2, min_recharges=1, min_len=0),
+        "medium": dict(rovers=2, waypoints=8, goals=4, levels=5, two_way=0.65, one_way=0.20, extra_div=2,
+                       minor_cap=3, min_recharges=1, min_len=0),
+        "large": dict(rovers=3, waypoints=12, goals=6, levels=5, two_way=0.65, one_way=0.20, extra_div=2,
+                      minor_cap=3, min_recharges=1, min_len=0),
+    },
+    "v2": {
+        "small": dict(rovers=1, waypoints=7, goals=4, levels=4, two_way=0.50, one_way=0.30, extra_div=3,
+                      minor_cap=2, min_recharges=3, min_len=18),
+        "medium": dict(rovers=2, waypoints=11, goals=7, levels=4, two_way=0.50, one_way=0.30, extra_div=3,
+                       minor_cap=2, min_recharges=5, min_len=36),
+        "large": dict(rovers=3, waypoints=14, goals=9, levels=4, two_way=0.50, one_way=0.30, extra_div=2,
+                      minor_cap=4, min_recharges=7, min_len=50),
+    },
 }
+DEFAULT_PROFILE = "v2"
+SIZES = PROFILES[DEFAULT_PROFILE]
 # (problem number, size) in the order written to disk
 PLAN_OF_PROBLEMS = [(1, "small"), (2, "small"), (3, "medium"), (4, "medium"), (5, "large"), (6, "large")]
 
 
-def make_instance(size, rng):
+def make_instance(size, rng, profile=DEFAULT_PROFILE):
     """Draw one random instance as a plain dict (no checking yet)."""
-    cfg = SIZES[size]
+    cfg = PROFILES[profile][size]
     n = cfg["waypoints"]
     wps = [f"w{i}" for i in range(1, n + 1)]
     rovers = [f"rover{i}" for i in range(1, cfg["rovers"] + 1)]
@@ -41,7 +67,7 @@ def make_instance(size, rng):
     for i in range(1, n):
         j = rng.randrange(0, i)
         edges.add((j, i))
-    extra = max(2, n // 2)
+    extra = max(2, n // cfg["extra_div"])
     tries = 0
     while extra > 0 and tries < 200:
         tries += 1
@@ -55,9 +81,9 @@ def make_instance(size, rng):
     for r in rovers:
         for a, b in sorted(edges):
             x = rng.random()
-            if x < 0.65:
+            if x < cfg["two_way"]:
                 traverse[r] |= {(wps[a], wps[b]), (wps[b], wps[a])}
-            elif x < 0.85:
+            elif x < cfg["two_way"] + cfg["one_way"]:
                 pair = (wps[a], wps[b]) if rng.random() < 0.5 else (wps[b], wps[a])
                 traverse[r].add(pair)
             # else: blocked for this rover
@@ -76,8 +102,8 @@ def make_instance(size, rng):
 
     # Sunlit and comm-visible waypoints: strict minorities, chosen independently.
     k_minor = (n - 1) // 2  # strictly fewer than n/2
-    sunlit = set(rng.sample(wps, rng.randint(1, max(1, min(k_minor, 2 if n <= 5 else 3)))))
-    comm = set(rng.sample(wps, rng.randint(1, max(1, min(k_minor, 2 if n <= 5 else 3)))))
+    sunlit = set(rng.sample(wps, rng.randint(1, max(1, min(k_minor, cfg["minor_cap"])))))
+    comm = set(rng.sample(wps, rng.randint(1, max(1, min(k_minor, cfg["minor_cap"])))))
 
     # Goals: half samples, half images, at distinct non-base waypoints.
     n_goals = cfg["goals"]
@@ -217,12 +243,18 @@ def to_pddl(inst, name, seed, attempt):
     return "\n".join(lines) + "\n"
 
 
-def generate_one(num, size, base_seed, domain_path, out_dir, optimal_timeout, max_attempts=400, log=print):
+def generate_one(num, size, base_seed, domain_path, out_dir, optimal_timeout, max_attempts=30000, log=print,
+                 profile=DEFAULT_PROFILE):
     name = f"p{num:02d}_{size}"
+    cfg = PROFILES[profile][size]
+
+    def hard_enough(plan):
+        return (sum(st.startswith("(recharge ") for st in plan) >= cfg["min_recharges"]
+                and len(plan) >= cfg["min_len"])
     for attempt in range(max_attempts):
         seed = base_seed * 1000 + num * 100000 + attempt  # unique, deterministic
         rng = random.Random(seed)
-        inst = make_instance(size, rng)
+        inst = make_instance(size, rng, profile)
         fails = check_structure(inst) or check_feasible(inst)
         if fails:
             continue
@@ -233,17 +265,21 @@ def generate_one(num, size, base_seed, domain_path, out_dir, optimal_timeout, ma
         if quick["status"] != "solved":
             log(f"  {name} attempt {attempt}: rejected (not solvable / too slow for GBFS)")
             continue
+        if not hard_enough(quick["plan"]):   # cheap filter before the slow optimal search
+            continue
         best = solve_best(domain_path, pddl_path, optimal_timeout=optimal_timeout)
         if best["status"] != "solved":
             log(f"  {name} attempt {attempt}: rejected (planner failed)")
             continue
         plan = best["plan"]
         # (b) the battery must be binding: reference plan has a recharge.
-        if not any(step.startswith("(recharge ") for step in plan):
-            log(f"  {name} attempt {attempt}: rejected (reference plan has no recharge)")
+        # and (profile) the plan must be long enough / need enough recharges.
+        if not any(step.startswith("(recharge ") for step in plan) or not hard_enough(plan):
+            log(f"  {name} attempt {attempt}: rejected (reference plan too easy: "
+                f"{len(plan)} steps, {sum(st.startswith('(recharge ') for st in plan)} recharges)")
             continue
         meta = dict(
-            name=name, size=size, seed_base=base_seed, attempt=attempt,
+            name=name, size=size, profile=profile, seed_base=base_seed, attempt=attempt,
             rovers=len(inst["rovers"]), waypoints=len(inst["wps"]), goals=len(inst["sample_goals"]) + len(inst["image_goals"]),
             battery_levels=len(inst["levels"]),
             sunlit=inst["sunlit"], comm_visible=inst["comm"], equipment=inst["equip"],
@@ -265,6 +301,7 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--seed", type=int, default=2026)
     ap.add_argument("--optimal-timeout", type=float, default=120)
+    ap.add_argument("--difficulty", choices=sorted(PROFILES), default=DEFAULT_PROFILE)
     args = ap.parse_args(argv)
     domain = ROOT / "domain" / "lunar.pddl"
     out = ROOT / "problems" / "standard"
@@ -272,7 +309,8 @@ def main(argv=None):
     out.mkdir(parents=True, exist_ok=True)
     refs.mkdir(parents=True, exist_ok=True)
     for num, size in PLAN_OF_PROBLEMS:
-        name, meta, plan = generate_one(num, size, args.seed, domain, out, args.optimal_timeout)
+        name, meta, plan = generate_one(num, size, args.seed, domain, out, args.optimal_timeout,
+                                        profile=args.difficulty)
         (out / f"{name}.json").write_text(json.dumps(meta, indent=2) + "\n")
         (refs / f"{name}.plan").write_text(plan_to_text(plan))
         r = meta["reference"]
