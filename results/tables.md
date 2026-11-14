@@ -62,20 +62,20 @@ Episodes analysed: 144. Max feedback rounds: 3.
 
 ## T2. First-error category at round 0 (counts among invalid direct plans)
 
-| model | variant | n_invalid_round0 | syntax | terrain | battery | communication | equipment | state | goal_not_reached |
-|---|---|---|---|---|---|---|---|---|---|
-| deepseek-direct | mystery | 12 | 0 | 0 | 2 | 1 | 0 | 9 | 0 |
-| deepseek-direct | rovers | 12 | 1 | 2 | 0 | 1 | 1 | 7 | 0 |
-| deepseek-direct | standard | 12 | 1 | 0 | 6 | 2 | 0 | 3 | 0 |
-| gpt-direct | mystery | 12 | 0 | 0 | 5 | 0 | 0 | 7 | 0 |
-| gpt-direct | rovers | 12 | 0 | 1 | 0 | 3 | 1 | 7 | 0 |
-| gpt-direct | standard | 12 | 0 | 1 | 6 | 3 | 0 | 2 | 0 |
-| haiku-direct | mystery | 12 | 4 | 1 | 4 | 1 | 0 | 1 | 1 |
-| haiku-direct | rovers | 12 | 5 | 2 | 0 | 1 | 1 | 3 | 0 |
-| haiku-direct | standard | 12 | 0 | 1 | 2 | 0 | 2 | 7 | 0 |
-| nemo-direct | mystery | 12 | 8 | 1 | 3 | 0 | 0 | 0 | 0 |
-| nemo-direct | rovers | 12 | 5 | 6 | 0 | 0 | 0 | 1 | 0 |
-| nemo-direct | standard | 12 | 3 | 6 | 2 | 0 | 0 | 1 | 0 |
+| model | variant | n_invalid_round0 | no_plan | syntax | terrain | battery | communication | equipment | state | goal_not_reached |
+|---|---|---|---|---|---|---|---|---|---|---|
+| deepseek-direct | mystery | 12 | 0 | 0 | 0 | 2 | 1 | 0 | 9 | 0 |
+| deepseek-direct | rovers | 12 | 0 | 1 | 2 | 0 | 1 | 1 | 7 | 0 |
+| deepseek-direct | standard | 12 | 0 | 1 | 0 | 6 | 2 | 0 | 3 | 0 |
+| gpt-direct | mystery | 12 | 0 | 0 | 0 | 5 | 0 | 0 | 7 | 0 |
+| gpt-direct | rovers | 12 | 0 | 0 | 1 | 0 | 3 | 1 | 7 | 0 |
+| gpt-direct | standard | 12 | 0 | 0 | 1 | 6 | 3 | 0 | 2 | 0 |
+| haiku-direct | mystery | 12 | 4 | 0 | 1 | 4 | 1 | 0 | 1 | 1 |
+| haiku-direct | rovers | 12 | 5 | 0 | 2 | 0 | 1 | 1 | 3 | 0 |
+| haiku-direct | standard | 12 | 0 | 0 | 1 | 2 | 0 | 2 | 7 | 0 |
+| nemo-direct | mystery | 12 | 0 | 8 | 1 | 3 | 0 | 0 | 0 | 0 |
+| nemo-direct | rovers | 12 | 0 | 5 | 6 | 0 | 0 | 0 | 1 | 0 |
+| nemo-direct | standard | 12 | 0 | 3 | 6 | 2 | 0 | 0 | 1 | 0 |
 
 ## Baseline (pyperplan reference plans)
 

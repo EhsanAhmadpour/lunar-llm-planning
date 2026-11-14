@@ -25,7 +25,7 @@ from pathlib import Path
 from .pddl_utils import ROOT, domain_for
 from .validate import validate_text, default_mapping_for
 
-CATEGORIES = ["syntax", "terrain", "battery", "communication", "equipment", "state", "goal_not_reached"]
+CATEGORIES = ["no_plan", "syntax", "terrain", "battery", "communication", "equipment", "state", "goal_not_reached"]
 SIZES = ["small", "medium", "large"]
 _FNAME = re.compile(r"rep(\d+)_round(\d+)\.json$")
 
@@ -56,6 +56,10 @@ def load_episodes(results_dir, root=ROOT, max_rounds=3):
             if r > max_rounds:
                 continue
             results[r] = validate_text(domain, problem_file, rounds[r]["response_text"], mapping)
+            if results[r]["plan_length"] == 0:
+                # the reply contains no plan at all (the model declined, or wrote only prose):
+                # counted apart from real syntax errors
+                results[r]["error_category"] = "no_plan"
         solved = next((r for r in sorted(results) if results[r]["valid"]), None)
         finished = solved is not None or len(results) == max_rounds + 1
         episodes.append(dict(
