@@ -7,5 +7,5 @@
 # models: optional, comma-separated labels from config/models.yaml (empty = all)
 # note:   free text for your own records
 mode: full
-models: "nemo-direct,deepseek-direct,haiku-direct,gpt-direct,gemini-direct"
-note: "stage 1 (cheap models, thinking off) approved by Ehsan on 14 Nov 2026"
+models: "haiku-think"
+note: "check: Haiku 5.5 with thinking ON via OpenRouter, approved by Ehsan on 14 Nov 2026"
