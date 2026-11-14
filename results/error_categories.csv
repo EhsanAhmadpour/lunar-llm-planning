@@ -1,1 +1,2 @@
 model,variant,n_invalid_round0,syntax,terrain,battery,communication,equipment,state,goal_not_reached
+nemo-direct,standard,1,1,0,0,0,0,0,0
