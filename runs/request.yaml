@@ -7,5 +7,5 @@
 # models: optional, comma-separated labels from config/models.yaml (empty = all)
 # note:   free text for your own records
 mode: full
-models: "haiku-think"
-note: "check 2: Haiku 5.5 thinking ON with a 32000-token reply cap, approved by Ehsan on 14 Nov 2026"
+models: "gpt-think"
+note: "GPT-5.6 Luna thinking ON, 32000-token cap, approved by Ehsan on 14 Nov 2026"
