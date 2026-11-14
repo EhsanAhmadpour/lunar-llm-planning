@@ -1,4 +1,4 @@
-"""Run pyperplan on all 12 instances (standard + mystery) and validate with OUR validator.
+"""Run pyperplan on all instances (standard + mystery + IPC rovers) and validate with OUR validator.
 
 Usage:  python -m src.run_baseline
 
@@ -25,8 +25,9 @@ def main():
     out_dir = ROOT / "results"
     out_dir.mkdir(exist_ok=True)
     rows, all_valid = [], True
-    for inst in list_instances():
-        meta = json.loads((ROOT / "problems" / "standard" / f"{inst.name}.json").read_text())["reference"]
+    for inst in list_instances(("standard", "mystery", "rovers")):
+        meta_dir = "rovers" if inst.variant == "rovers" else "standard"
+        meta = json.loads((ROOT / "problems" / meta_dir / f"{inst.name}.json").read_text())["reference"]
         res = run_search(inst.domain, inst.problem, meta["search"], meta["heuristic"], 900)
         row = dict(variant=inst.variant, problem=inst.name, size=inst.size, search=meta["search"],
                    heuristic=meta["heuristic"], optimal=meta["optimal"], plan_length="", time_s=round(res["time_s"], 3),

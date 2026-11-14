@@ -43,3 +43,12 @@ All six v3 problems are now generated and the repository is consistent again (ba
 solve every mission we could generate (23 of 24 first-try plans valid over four rounds), so making
 the maps harder is not what separates success from failure. The paid run therefore compares the
 same cheap models WITHOUT thinking ("-direct") and WITH thinking ("-think"); see config/models.yaml.
+
+## Round 5: IPC Rovers (second benchmark)
+
+To get longer, externally recognised tasks we added six IPC Rovers tasks (problems/rovers/). Pilot on the
+two largest: `pilot-weak` on r05_large (reference 101 steps) and r06_large (127 steps), `pilot-strong` on
+r06_large. Result: 3 of 3 valid on the first try (plans of 97 to 120 steps).
+
+Overall pilot: 26 of 27 first-try plans valid. Thinking Claude models are at the ceiling on everything
+tried, so the paid run focuses on thinking OFF versus ON and on other model families.

@@ -28,7 +28,7 @@ Plain STRIPS with types: no numbers, no negative preconditions. Battery is a cha
 | Action | What it does | Must hold before |
 |---|---|---|
 | `move r from to l1 l2` | drive, costs one battery level | rover at `from`; `can-traverse r from to` (terrain); battery is `l1`; `l2` is one level below `l1` (so impossible at the lowest level) |
-| `recharge r w l lfull` | jump to full battery | rover at `w`; `w` is sunlit; battery is `l`; `l` is below full; `lfull` is the full level |
+| `recharge r w l lfull c` | jump to full battery, **uses up charge `c`** | rover at `w`; `w` is sunlit; charge `c` is at `w` (`charge-at c w`); battery is `l`; `l` is below full; `lfull` is the full level |
 | `collect-sample r w l1 l2` | pick up a soil sample, costs one battery level | rover at `w`; `w` is a sample site; rover has a sampler; its sample store is empty; battery `l1`, `l2` one below |
 | `take-image r w` | photograph a target | rover at `w`; `w` is an image target; rover has a camera |
 | `send-sample r site w` | transmit a held sample to Earth | rover holds the sample from `site`; rover at `w`; `w` is comm-visible |
@@ -40,10 +40,23 @@ minority can see Earth, some edges are blocked or one-way for some rovers, and i
 problems not every rover has both instruments. Every reference plan needs at least one recharge, so the
 battery really matters.
 
-Instances (generated, seeded): 2 each of **small** (1 rover, 5 waypoints, 2 goals, 4 battery levels),
-**medium** (2 rovers, 8 waypoints, 4 goals, 5 levels) and **large** (3 rovers, 12 waypoints, 6 goals, 5 levels).
+Recharging is a limited resource: each sunlit waypoint offers a fixed number of `charge` objects and every
+recharge deletes one, so the whole mission has a tight budget of recharges.
+
+Instances (generated, seeded): 2 each of **small** (1 rover, 7 waypoints, 4 goals), **medium** (2 rovers,
+11 waypoints, 7 goals) and **large** (3 rovers, 14 waypoints, 9 goals), all with 4 battery levels. Reference
+plans have 19 to 59 steps. This is the third, hardest version of the set; `pilot/README.md` tells why.
 The **mystery** variant renames every action, predicate, type, object and variable to made-up words
 (for example `move` becomes a word like `zorp`) but keeps the logic identical.
+
+**Second benchmark: IPC Rovers.** Because our own missions proved easy for current models, the experiment
+also runs six tasks of the classic *Rovers* domain, copied unchanged from the International Planning
+Competition 2023 Learning Track (`domain/rovers.pddl`, `problems/rovers/`, see the README there). They are
+longer (reference plans of 33 to 127 steps) and are used in published LLM-planning papers. It is a third
+"variant" called `rovers`; it has no battery and no mystery copy.
+
+**Thinking on or off.** `config/models.yaml` runs the same cheap models twice: without thinking (`-direct`,
+the model must write the plan immediately) and with thinking (`-think`).
 
 ## Folder map
 
@@ -51,6 +64,8 @@ The **mystery** variant renames every action, predicate, type, object and variab
 domain/            lunar.pddl (standard), mystery.pddl + mystery_mapping.json (renamed copy and the name table)
 problems/standard/ p01_small.pddl ... p06_large.pddl (+ .json metadata: seed, checks, reference-plan info)
 problems/mystery/  the same six problems with mystery names
+problems/rovers/   six IPC Rovers tasks (r01_small ... r06_large) + metadata
+pilot/             the free pilot rounds that shaped the problem sets (read pilot/README.md)
 problems/reference_plans/  plans found by pyperplan (standard and *.mystery.plan)
 prompts/           direct.txt (first prompt), feedback.txt (verifier message)
 config/            models.yaml (which models, prices), experiment.yaml (budget, rounds, ...)
@@ -66,7 +81,7 @@ runs/request.yaml  asks the GitHub workflow to run something (see below)
 ```bash
 pip install -r requirements.txt                 # 1. install (Python 3.10+)
 python -m src.generate_problems && python -m src.obfuscate   # 2. (optional) regenerate problems; they are already committed
-python -m src.run_baseline                      # 3. pyperplan solves all 12 instances; our validator must accept them all
+python -m src.run_baseline                      # 3. pyperplan solves all 18 instances; our validator must accept them all
 python -m src.run_llm --estimate                # 4. see the cost table (no API calls); then: --smoke, then the full run
 python -m src.analyze                           # 5. tables (results/tables.md, summary.csv) and figures/validity.png
 ```

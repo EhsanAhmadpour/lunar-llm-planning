@@ -3,6 +3,6 @@ budget_usd: 9.0            # hard cap: the runner stops BEFORE a call that could
 max_feedback_rounds: 3     # after a failed round-0 plan, up to this many verifier-feedback rounds
 temperature: 0
 problems: all              # "all" or a list such as [p01_small, p03_medium]
-variants: [standard, mystery]
+variants: [standard, mystery, rovers]   # rovers = IPC Rovers tasks (problems/rovers)
 request_timeout_s: 120
 max_retries: 5             # retries on HTTP 429 / 5xx / network errors (exponential backoff)

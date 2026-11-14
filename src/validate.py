@@ -49,6 +49,12 @@ PREDICATE_CATEGORY = {
     "charge-at": "battery",   # recharging with a charge that is not (or no longer) at that waypoint
     "comm-visible": "communication",
     "has-sampler": "equipment", "has-camera": "equipment",
+    # IPC Rovers domain (domain/rovers.pddl)
+    "can_traverse": "terrain", "visible": "terrain",
+    "at_lander": "communication",
+    "equipped_for_soil_analysis": "equipment", "equipped_for_rock_analysis": "equipment",
+    "equipped_for_imaging": "equipment", "on_board": "equipment", "supports": "equipment",
+    "store_of": "equipment", "calibration_target": "equipment",
 }  # everything else (at, store-empty, holding-*, sample-site, image-target, sunlit) -> "state"
 
 
@@ -197,7 +203,8 @@ def validate_text(domain_path, problem_path, plan_text, mapping=None):
             if ground not in state:
                 failed.append(ground)
         if failed:
-            cats = [category_of(n) for n, _ in failed]
+            cats = ["communication" if n == "visible" and act.name.startswith("communicate")
+                    else category_of(n) for n, _ in failed]  # Rovers: 'visible' also means line of sight to the lander
             cat = min(cats, key=PRIORITY.index)
             texts = [_fmt_atom(n, a) for n, a in failed]
             if len(texts) == 1:

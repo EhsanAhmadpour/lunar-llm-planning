@@ -1,0 +1,17 @@
+{
+  "name": "r04_medium",
+  "size": "medium",
+  "source": "ipc2023-learning/benchmarks rovers/testing/easy/p27.pddl",
+  "rovers": 4,
+  "waypoints": 10,
+  "cameras": 4,
+  "objectives": 9,
+  "goals": 19,
+  "reference": {
+    "search": "gbf",
+    "heuristic": "hff",
+    "optimal": false,
+    "plan_length": 70,
+    "time_s": 14.223
+  }
+}

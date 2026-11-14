@@ -34,7 +34,7 @@ from pathlib import Path
 import requests
 import yaml
 
-from .pddl_utils import ROOT, read_text, strip_comments
+from .pddl_utils import ROOT, domain_for, read_text, strip_comments
 from .validate import validate_text, default_mapping_for
 
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
@@ -99,9 +99,9 @@ def list_instances(variants=("standard", "mystery"), problems="all", root=ROOT):
     root = Path(root)
     out = []
     for variant in variants:
-        domain = root / "domain" / ("lunar.pddl" if variant == "standard" else "mystery.pddl")
+        domain = domain_for(variant, root)
         pdir = root / "problems" / variant
-        for p in sorted(pdir.glob("p*.pddl")):
+        for p in sorted(pdir.glob("[pr][0-9]*.pddl")):
             if problems != "all" and p.stem not in problems:
                 continue
             out.append(Instance(variant, p.stem, p.stem.split("_")[-1], domain, p))

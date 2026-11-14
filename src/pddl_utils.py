@@ -27,3 +27,14 @@ def read_text(path) -> str:
 def plan_to_text(plan_lines) -> str:
     """Join a list like ['(move r1 w1 w2 b3 b2)', ...] into plan-file text."""
     return "\n".join(plan_lines) + "\n"
+
+
+# Which domain file belongs to which variant (folder under problems/).
+#   standard, mystery : our lunar domain (generated problems)
+#   rovers            : the classic IPC "Rovers" domain, tasks taken unchanged from the
+#                       IPC 2023 Learning Track test set (see problems/rovers/README.md)
+DOMAIN_FILES = {"standard": "lunar.pddl", "mystery": "mystery.pddl", "rovers": "rovers.pddl"}
+
+
+def domain_for(variant, root=ROOT):
+    return Path(root) / "domain" / DOMAIN_FILES[variant]

@@ -18,15 +18,21 @@ _no data yet_
 
 | variant | problem | plan_length | optimal | time_s | valid |
 |---|---|---|---|---|---|
-| standard | p01_small | 22 | True | 10.269 | True |
-| standard | p02_small | 19 | True | 0.347 | True |
-| standard | p03_medium | 53 | False | 0.567 | True |
-| standard | p04_medium | 35 | False | 0.06 | True |
-| standard | p05_large | 54 | False | 1.667 | True |
-| standard | p06_large | 59 | False | 1.706 | True |
-| mystery | p01_small | 22 | True | 10.346 | True |
-| mystery | p02_small | 19 | True | 0.335 | True |
-| mystery | p03_medium | 53 | False | 7.445 | True |
-| mystery | p04_medium | 35 | False | 0.063 | True |
-| mystery | p05_large | 53 | False | 1.216 | True |
-| mystery | p06_large | 61 | False | 0.251 | True |
+| standard | p01_small | 22 | True | 11.625 | True |
+| standard | p02_small | 19 | True | 0.493 | True |
+| standard | p03_medium | 53 | False | 0.791 | True |
+| standard | p04_medium | 35 | False | 0.088 | True |
+| standard | p05_large | 54 | False | 1.938 | True |
+| standard | p06_large | 59 | False | 2.255 | True |
+| mystery | p01_small | 22 | True | 12.451 | True |
+| mystery | p02_small | 19 | True | 0.422 | True |
+| mystery | p03_medium | 53 | False | 8.7 | True |
+| mystery | p04_medium | 35 | False | 0.056 | True |
+| mystery | p05_large | 53 | False | 1.371 | True |
+| mystery | p06_large | 61 | False | 0.255 | True |
+| rovers | r01_small | 33 | False | 7.924 | True |
+| rovers | r02_small | 33 | False | 0.601 | True |
+| rovers | r03_medium | 49 | False | 1.915 | True |
+| rovers | r04_medium | 70 | False | 15.682 | True |
+| rovers | r05_large | 101 | False | 31.114 | True |
+| rovers | r06_large | 127 | False | 22.874 | True |

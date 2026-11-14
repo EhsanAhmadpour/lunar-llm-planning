@@ -22,7 +22,7 @@ import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
-from .pddl_utils import ROOT
+from .pddl_utils import ROOT, domain_for
 from .validate import validate_text, default_mapping_for
 
 CATEGORIES = ["syntax", "terrain", "battery", "communication", "equipment", "state", "goal_not_reached"]
@@ -46,7 +46,7 @@ def load_episodes(results_dir, root=ROOT, max_rounds=3):
             groups[(rec["model_label"], rec["variant"], rec["problem"], int(m.group(1)))][int(m.group(2))] = rec
     episodes = []
     for (label, variant, problem, rep), rounds in sorted(groups.items()):
-        domain = Path(root) / "domain" / ("lunar.pddl" if variant == "standard" else "mystery.pddl")
+        domain = domain_for(variant, root)
         problem_file = Path(root) / "problems" / variant / f"{problem}.pddl"
         if not problem_file.exists() or 0 not in rounds:
             continue
@@ -71,9 +71,10 @@ def reference_lengths(results_dir, root=ROOT):
     base = Path(results_dir) / "baseline.csv"
     if base.exists():
         for row in csv.DictReader(base.open()):
-            if row["variant"] == "standard" and row["plan_length"]:
+            if row["variant"] in ("standard", "rovers") and row["plan_length"]:
                 lengths[row["problem"]] = int(row["plan_length"])
-    for j in (Path(root) / "problems" / "standard").glob("*.json"):
+    for j in [*(Path(root) / "problems" / "standard").glob("*.json"),
+              *(Path(root) / "problems" / "rovers").glob("*.json")]:
         meta = json.loads(j.read_text())
         lengths.setdefault(meta["name"], meta["reference"]["plan_length"])
     return lengths

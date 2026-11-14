@@ -21,11 +21,11 @@
 # are where most failures - and most of the verifier's benefit - are expected.
 models:
   # ---- cheap, no thinking (3 repeats)
-  - {id: "mistralai/mistral-nemo",        label: nemo-direct,     tier: cheap, repeats: 3, price_in: 0.20, price_out: 0.20, max_tokens: 3000}   # older small open model, cannot think; price is an upper bound (cheapest provider $0.017/$0.022)
-  - {id: "deepseek/deepseek-v4.1-flash",  label: deepseek-direct, tier: cheap, repeats: 3, price_in: 0.45, price_out: 1.80, max_tokens: 3000, reasoning: {enabled: false}}   # price is the dearest provider; usually ~$0.05-0.15 / $0.20-0.60
-  - {id: "anthropic/claude-haiku-5.5",    label: haiku-direct,    tier: cheap, repeats: 3, price_in: 0.10, price_out: 0.50, max_tokens: 3000, reasoning: {enabled: false}}
-  - {id: "openai/gpt-5.6-luna",           label: gpt-direct,      tier: cheap, repeats: 3, price_in: 0.20, price_out: 1.20, max_tokens: 3000, reasoning: {enabled: false}}
-  - {id: "google/gemini-3.5-flash-lite",  label: gemini-direct,   tier: cheap, repeats: 3, price_in: 0.30, price_out: 2.50, max_tokens: 3000, reasoning: {enabled: false}}
+  - {id: "mistralai/mistral-nemo",        label: nemo-direct,     tier: cheap, repeats: 2, price_in: 0.20, price_out: 0.20, max_tokens: 4000}   # older small open model, cannot think; price is an upper bound (cheapest provider $0.017/$0.022)
+  - {id: "deepseek/deepseek-v4.1-flash",  label: deepseek-direct, tier: cheap, repeats: 2, price_in: 0.45, price_out: 1.80, max_tokens: 4000, reasoning: {enabled: false}}   # price is the dearest provider; usually ~$0.05-0.15 / $0.20-0.60
+  - {id: "anthropic/claude-haiku-5.5",    label: haiku-direct,    tier: cheap, repeats: 2, price_in: 0.10, price_out: 0.50, max_tokens: 4000, reasoning: {enabled: false}}
+  - {id: "openai/gpt-5.6-luna",           label: gpt-direct,      tier: cheap, repeats: 2, price_in: 0.20, price_out: 1.20, max_tokens: 4000, reasoning: {enabled: false}}
+  - {id: "google/gemini-3.5-flash-lite",  label: gemini-direct,   tier: cheap, repeats: 2, price_in: 0.30, price_out: 2.50, max_tokens: 4000, reasoning: {enabled: false}}
   # ---- cheap, with thinking (1 repeat)
   - {id: "deepseek/deepseek-v4.1-flash",  label: deepseek-think,  tier: cheap, repeats: 1, price_in: 0.45, price_out: 1.80, max_tokens: 6000, reasoning: {effort: medium}}
   - {id: "anthropic/claude-haiku-5.5",    label: haiku-think,     tier: cheap, repeats: 1, price_in: 0.10, price_out: 0.50, max_tokens: 6000, reasoning: {effort: medium}}
