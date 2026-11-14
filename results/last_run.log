@@ -1,0 +1,6 @@
+model         tier     episodes  worst-case $  expected $
+cheap-a       cheap          36          0.27        0.05
+cheap-b       cheap          36          0.18        0.03
+strong-a      strong         12          3.96        0.69
+TOTAL                                    4.41        0.78
+Budget cap: $9.00. Worst case = every episode uses all rounds and every reply hits max_tokens; expected = 1.6 calls per episode, replies use 50% of max_tokens. Prices come from config/models.yaml (placeholders until you edit them).
