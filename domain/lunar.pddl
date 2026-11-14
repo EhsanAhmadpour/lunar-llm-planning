@@ -1,10 +1,13 @@
 ;; Lunar rover domain (plain STRIPS + :typing).
 ;; Rovers drive between waypoints, spend battery (one level per move or
 ;; sample), recharge only in sunlight, and can only transmit data to Earth
-;; from waypoints that are in communication view.
+;; from waypoints that are in communication view. Recharging is a LIMITED
+;; resource: every recharge uses up one "charge" that is available at that
+;; sunlit waypoint (think of a short sunlight window), so a mission has a fixed
+;; total number of recharges and wasting one can make the goal unreachable.
 (define (domain lunar)
   (:requirements :strips :typing)
-  (:types rover waypoint level)
+  (:types rover waypoint level charge)
   (:predicates
     (at ?r - rover ?w - waypoint)
     (can-traverse ?r - rover ?from - waypoint ?to - waypoint)
@@ -13,6 +16,7 @@
     (below-full ?l - level)
     (full-level ?l - level)
     (sunlit ?w - waypoint)
+    (charge-at ?c - charge ?w - waypoint)
     (comm-visible ?w - waypoint)
     (sample-site ?w - waypoint)
     (image-target ?w - waypoint)
@@ -33,11 +37,12 @@
                  (battery ?r ?l2) (not (battery ?r ?l1))))
 
   ;; Only in sunlight; jumps straight to the full level. Not applicable when already full.
+  ;; Uses up one charge ?c that is available at this waypoint (it is gone afterwards).
   (:action recharge
-    :parameters (?r - rover ?w - waypoint ?l - level ?lfull - level)
-    :precondition (and (at ?r ?w) (sunlit ?w) (battery ?r ?l)
+    :parameters (?r - rover ?w - waypoint ?l - level ?lfull - level ?c - charge)
+    :precondition (and (at ?r ?w) (sunlit ?w) (charge-at ?c ?w) (battery ?r ?l)
                        (below-full ?l) (full-level ?lfull))
-    :effect (and (not (battery ?r ?l)) (battery ?r ?lfull)))
+    :effect (and (not (battery ?r ?l)) (battery ?r ?lfull) (not (charge-at ?c ?w))))
 
   (:action collect-sample
     :parameters (?r - rover ?w - waypoint ?l1 - level ?l2 - level)

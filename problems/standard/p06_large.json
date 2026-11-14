@@ -1,52 +1,60 @@
 {
   "name": "p06_large",
   "size": "large",
-  "profile": "v2",
+  "profile": "v3",
   "seed_base": 2026,
-  "attempt": 142,
+  "attempt": 807,
   "rovers": 3,
   "waypoints": 14,
   "goals": 9,
   "battery_levels": 4,
   "sunlit": [
-    "w1",
-    "w2",
+    "w3",
     "w9",
-    "w12"
+    "w10",
+    "w13"
   ],
+  "charges": {
+    "w3": 6,
+    "w9": 1,
+    "w10": 1,
+    "w13": 3
+  },
+  "charges_total": 11,
+  "charge_slack": 0,
   "comm_visible": [
-    "w1",
-    "w10"
+    "w7",
+    "w14"
   ],
   "equipment": {
     "rover1": [
-      "camera"
+      "sampler"
     ],
     "rover2": [
       "camera",
       "sampler"
     ],
     "rover3": [
-      "camera",
-      "sampler"
+      "camera"
     ]
   },
   "sample_goals": [
     "w3",
-    "w5",
+    "w6",
     "w7",
-    "w8"
+    "w11"
   ],
   "image_goals": [
     "w2",
     "w4",
-    "w10",
-    "w13",
-    "w14"
+    "w8",
+    "w12",
+    "w13"
   ],
   "checks": {
     "solvable": true,
     "reference_plan_has_recharge": true,
+    "charge_budget": "tight for the greedy planner (not proven minimal)",
     "comm_minority": true,
     "sunlit_minority": true,
     "terrain_matters": true,
@@ -56,9 +64,9 @@
     "search": "gbf",
     "heuristic": "hff",
     "optimal": false,
-    "plan_length": 62,
-    "time_s": 10.013,
-    "recharges": 12,
+    "plan_length": 59,
+    "time_s": 2.527,
+    "recharges": 11,
     "optimal_search_timeout_s": 60.0
   }
 }

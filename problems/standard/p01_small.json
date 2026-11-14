@@ -1,7 +1,7 @@
 {
   "name": "p01_small",
   "size": "small",
-  "profile": "v2",
+  "profile": "v3",
   "seed_base": 2026,
   "attempt": 67,
   "rovers": 1,
@@ -12,6 +12,12 @@
     "w2",
     "w5"
   ],
+  "charges": {
+    "w2": 2,
+    "w5": 2
+  },
+  "charges_total": 4,
+  "charge_slack": 0,
   "comm_visible": [
     "w4",
     "w6"
@@ -33,6 +39,7 @@
   "checks": {
     "solvable": true,
     "reference_plan_has_recharge": true,
+    "charge_budget": "tight for the greedy planner (not proven minimal)",
     "comm_minority": true,
     "sunlit_minority": true,
     "terrain_matters": true,
@@ -43,7 +50,7 @@
     "heuristic": "lmcut",
     "optimal": true,
     "plan_length": 22,
-    "time_s": 1.962,
+    "time_s": 11.593,
     "recharges": 4,
     "optimal_search_timeout_s": null
   }

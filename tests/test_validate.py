@@ -40,7 +40,7 @@ def test_tiny_pure_categories(tiny, variant, plan, category, step):
 def test_tiny_each_other_category(tiny, variant):
     # battery: recharge when already full -> (below-full b3) false
     pre = "(move rover1 w1 w2 b3 b2)\n"
-    r = run(tiny, variant, "(recharge rover1 w1 b3 b3)")
+    r = run(tiny, variant, "(recharge rover1 w1 b3 b3 c1)")
     assert r["error_category"] == "battery"
     # communication: at w3 (not comm-visible) with the item in hand
     plan = ("(move rover1 w1 w2 b3 b2)\n(move rover1 w2 w3 b2 b1)\n(take-image rover1 w3)\n"
@@ -72,9 +72,21 @@ def test_message_lists_all_failed_preconditions_and_priority(tiny):
     r = run(tiny, "standard", "(move rover1 w1 w4 b1 b0)")
     assert r["error_category"] == "terrain" and len(r["failed_preconditions"]) == 2
     # battery beats communication/state
-    r = run(tiny, "standard", "(recharge rover1 w2 b3 b3)")  # not at w2, w2 not sunlit, level full
+    r = run(tiny, "standard", "(recharge rover1 w2 b3 b3 c1)")  # not at w2, w2 not sunlit, level full
     assert r["error_category"] == "battery"
     # equipment beats state is covered in the medium test
+
+
+def test_a_charge_can_only_be_used_once(tiny):
+    # c2 is at w3: the first recharge uses it up, a second recharge with it fails (battery category)
+    plan = ("(move rover1 w1 w2 b3 b2)\n(move rover1 w2 w3 b2 b1)\n(recharge rover1 w3 b1 b3 c2)\n"
+            "(move rover1 w3 w2 b3 b2)\n(move rover1 w2 w3 b2 b1)\n(recharge rover1 w3 b1 b3 c2)")
+    r = run(tiny, "standard", plan)
+    assert r["error_category"] == "battery" and r["first_error_step"] == 6
+    assert "(charge-at c2 w3)" in r["error_message"]
+    # a charge that belongs to another waypoint cannot be used here
+    r = run(tiny, "standard", "(move rover1 w1 w2 b3 b2)\n(move rover1 w2 w3 b2 b1)\n(recharge rover1 w3 b1 b3 c1)")
+    assert r["error_category"] == "battery" and r["first_error_step"] == 3
 
 
 def test_first_failing_step_decides(tiny):
@@ -93,7 +105,7 @@ def test_no_plan_is_syntax(tiny):
 def test_effects_are_applied_correctly(tiny):
     # recharge at w3 only works after the battery dropped; after collecting, sample is held -> second collect fails on store-empty
     plan = ("(move rover1 w1 w2 b3 b2)\n(move rover1 w2 w3 b2 b1)\n(collect-sample rover1 w3 b1 b0)\n"
-            "(recharge rover1 w3 b0 b3)\n(collect-sample rover1 w3 b3 b2)")
+            "(recharge rover1 w3 b0 b3 c2)\n(collect-sample rover1 w3 b3 b2)")
     r = run(tiny, "standard", plan)
     assert r["error_category"] == "state" and "(store-empty rover1)" in r["error_message"]
 

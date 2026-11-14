@@ -5,7 +5,8 @@
   (:objects
     rover1 - rover
     w1 w2 w3 w4 w5 w6 w7 - waypoint
-    b0 b1 b2 b3 - level)
+    b0 b1 b2 b3 - level
+    c1 c2 c3 c4 - charge)
   (:init
     (at rover1 w1) (battery rover1 b3) (store-empty rover1)
     (has-camera rover1)
@@ -34,6 +35,10 @@
     (full-level b3)
     (sunlit w2)
     (sunlit w5)
+    (charge-at c1 w2)
+    (charge-at c2 w2)
+    (charge-at c3 w5)
+    (charge-at c4 w5)
     (comm-visible w4)
     (comm-visible w6)
     (sample-site w2)

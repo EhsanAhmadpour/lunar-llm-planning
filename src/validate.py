@@ -46,6 +46,7 @@ PRIORITY = ["syntax", "terrain", "battery", "communication", "equipment", "state
 PREDICATE_CATEGORY = {
     "can-traverse": "terrain",
     "battery": "battery", "next-lower": "battery", "below-full": "battery", "full-level": "battery",
+    "charge-at": "battery",   # recharging with a charge that is not (or no longer) at that waypoint
     "comm-visible": "communication",
     "has-sampler": "equipment", "has-camera": "equipment",
 }  # everything else (at, store-empty, holding-*, sample-site, image-target, sunlit) -> "state"
