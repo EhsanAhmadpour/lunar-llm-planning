@@ -18,15 +18,15 @@ _no data yet_
 
 | variant | problem | plan_length | optimal | time_s | valid |
 |---|---|---|---|---|---|
-| standard | p01_small | 22 | True | 1.978 | True |
-| standard | p02_small | 19 | True | 0.172 | True |
-| standard | p03_medium | 41 | False | 0.073 | True |
-| standard | p04_medium | 57 | False | 9.798 | True |
-| standard | p05_large | 61 | False | 10.675 | True |
-| standard | p06_large | 62 | False | 10.252 | True |
-| mystery | p01_small | 22 | True | 1.843 | True |
-| mystery | p02_small | 19 | True | 0.168 | True |
-| mystery | p03_medium | 52 | False | 0.075 | True |
-| mystery | p04_medium | 57 | False | 10.215 | True |
-| mystery | p05_large | 60 | False | 0.814 | True |
-| mystery | p06_large | 62 | False | 0.225 | True |
+| standard | p01_small | 22 | True | 10.269 | True |
+| standard | p02_small | 19 | True | 0.347 | True |
+| standard | p03_medium | 53 | False | 0.567 | True |
+| standard | p04_medium | 35 | False | 0.06 | True |
+| standard | p05_large | 54 | False | 1.667 | True |
+| standard | p06_large | 59 | False | 1.706 | True |
+| mystery | p01_small | 22 | True | 10.346 | True |
+| mystery | p02_small | 19 | True | 0.335 | True |
+| mystery | p03_medium | 53 | False | 7.445 | True |
+| mystery | p04_medium | 35 | False | 0.063 | True |
+| mystery | p05_large | 53 | False | 1.216 | True |
+| mystery | p06_large | 61 | False | 0.251 | True |

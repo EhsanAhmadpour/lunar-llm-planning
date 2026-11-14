@@ -1,6 +1,13 @@
-model         tier     episodes  worst-case $  expected $
-cheap-a       cheap          36          0.27        0.05
-cheap-b       cheap          36          0.18        0.03
-strong-a      strong         12          3.96        0.69
-TOTAL                                    4.41        0.78
-Budget cap: $9.00. Worst case = every episode uses all rounds and every reply hits max_tokens; expected = 1.6 calls per episode, replies use 50% of max_tokens. Prices come from config/models.yaml (placeholders until you edit them).
+model           tier     episodes  worst-case $  expected $
+nemo-direct     cheap          36          0.26        0.04
+deepseek-direct cheap          36          1.17        0.21
+haiku-direct    cheap          36          0.30        0.05
+gpt-direct      cheap          36          0.69        0.13
+gemini-direct   cheap          36          1.34        0.25
+deepseek-think  cheap          12          0.75        0.13
+haiku-think     cheap          12          0.19        0.03
+gpt-think       cheap          12          0.45        0.08
+gemini-think    cheap          12          0.87        0.16
+sonnet-think    strong         12          2.65        0.47
+TOTAL                                    8.69        1.54
+Budget cap: $9.00. Worst case = every episode uses all rounds and every reply hits max_tokens; expected = 1.6 calls per episode, replies use 50% of max_tokens. Prices come from config/models.yaml (checked on the date noted there).

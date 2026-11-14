@@ -65,8 +65,8 @@
     "heuristic": "hff",
     "optimal": false,
     "plan_length": 59,
-    "time_s": 2.527,
+    "time_s": 3.152,
     "recharges": 11,
-    "optimal_search_timeout_s": 60.0
+    "optimal_search_timeout_s": 30.0
   }
 }

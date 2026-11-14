@@ -15,7 +15,7 @@ Each round folder has `raw/` (every prompt and answer, same format as `results/r
 | round2 | v2: 7/11/14 waypoints, 4/7/9 goals, 4 battery levels, sparser terrain | standard | 6 of 6 -> still too easy |
 | round3 | v2 | mystery | 6 of 6 -> still too easy |
 
-## Status when the work was paused (14 Nov 2026) - WORK IN PROGRESS
+## Notes from the pause on 14 Nov 2026 (all four points below are done, see the update at the end)
 
 Next hardening step, **v3**: recharging becomes a limited resource. Every recharge uses up one
 `charge` object that sits at a sunlit waypoint (`charge-at`), and the generator gives each problem a
@@ -31,3 +31,15 @@ and `p04_medium` are regenerated for v3.
 
 `domain_v1_v2/` holds the domain files used in rounds 1-3. `tools/` holds the two helper scripts used
 to pass prompts to the sub-agents and check the answers.
+
+## Update: round 4 and the decision to stop hardening
+
+| round | problem set | names | result (valid on the first try) |
+|---|---|---|---|
+| round4 | v3: v2-sized maps plus a tight budget of recharges (p01_small, p04_medium, p05_large) | standard | 6 of 6 |
+
+All six v3 problems are now generated and the repository is consistent again (baseline valid on all
+12 instances, tests pass). Conclusion of the pilot: Claude models that may think before answering
+solve every mission we could generate (23 of 24 first-try plans valid over four rounds), so making
+the maps harder is not what separates success from failure. The paid run therefore compares the
+same cheap models WITHOUT thinking ("-direct") and WITH thinking ("-think"); see config/models.yaml.

@@ -52,7 +52,11 @@ class ApiError(Exception):
 
 
 class FatalApiError(Exception):
-    """Bad key / bad model id / no credit: no point continuing."""
+    """Bad key / no credit: no point continuing."""
+
+
+class ModelUnavailable(Exception):
+    """This model id or its settings were rejected (HTTP 400/404): skip the model, keep going."""
 
 
 # --------------------------------------------------------------------------
@@ -194,6 +198,11 @@ def call_openrouter(model, messages, api_key, temperature, timeout, max_retries,
         "model": model["id"], "messages": messages, "temperature": temperature,
         "max_tokens": model["max_tokens"], "usage": {"include": True},
     }
+    if model.get("reasoning") is not None:
+        # optional per-model setting from models.yaml, passed to OpenRouter as-is,
+        # e.g. {effort: low} or {enabled: false}. Thinking tokens are billed as output
+        # and count towards max_tokens.
+        payload["reasoning"] = model["reasoning"]
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
     last = None
     for attempt in range(max_retries + 1):
@@ -221,9 +230,11 @@ def call_openrouter(model, messages, api_key, temperature, timeout, max_retries,
                     cost, src = (pt * model["price_in"] + ct * model["price_out"]) / 1e6, "computed"
                 return dict(text=text, usage={"prompt_tokens": pt, "completion_tokens": ct},
                             cost=cost, cost_source=src, returned_model=data.get("model"))
-            if code in (400, 401, 402, 403, 404):
-                raise FatalApiError(f"HTTP {code} from OpenRouter (check API key, credit, model id "
-                                    f"'{model['id']}')")
+            if code in (400, 404):
+                raise ModelUnavailable(f"HTTP {code} from OpenRouter for model '{model['id']}' "
+                                       f"(wrong id, or a setting such as 'reasoning' is not supported)")
+            if code in (401, 402, 403):
+                raise FatalApiError(f"HTTP {code} from OpenRouter (check API key and credit)")
             last = f"HTTP {code}"
             if code != 429 and code < 500:
                 raise ApiError(last)
@@ -331,10 +342,12 @@ def run_all(ctx, models, instances, repeats_override=None):
         if model["provider"] != "openrouter":
             continue
         reps = repeats_override or model["repeats"]
-        for inst in instances:
-            for rep in range(reps):
+        for inst, rep in [(i, r) for i in instances for r in range(reps)]:
                 try:
                     n_calls += run_episode(ctx, model, inst, rep)
+                except ModelUnavailable as exc:
+                    ctx.log(f"  SKIPPING MODEL {model['label']}: {exc}")
+                    break
                 except ApiError as exc:
                     failures += 1
                     ctx.log(f"  skipped {model['label']} {inst.variant}/{inst.name} rep{rep}: {exc}")
@@ -373,14 +386,14 @@ def estimate(models, instances, exp, root=ROOT):
 
 
 def print_estimate(rows, total_worst, total_expected, budget, out=print):
-    out(f"{'model':<14}{'tier':<8}{'episodes':>9}{'worst-case $':>14}{'expected $':>12}")
+    out(f"{"model":<16}{'tier':<8}{'episodes':>9}{'worst-case $':>14}{'expected $':>12}")
     for r in rows:
-        out(f"{r['label']:<14}{r['tier']:<8}{r['episodes']:>9}{r['worst']:>14.2f}{r['expected']:>12.2f}")
+        out(f"{r["label"]:<16}{r['tier']:<8}{r['episodes']:>9}{r['worst']:>14.2f}{r['expected']:>12.2f}")
     out(f"{'TOTAL':<22}{'':>9}{total_worst:>14.2f}{total_expected:>12.2f}")
     out(f"Budget cap: ${budget:.2f}. Worst case = every episode uses all rounds and every reply hits "
         f"max_tokens; expected = {EXPECTED_ROUNDS} calls per episode, replies use "
         f"{int(EXPECTED_OUT_FRACTION * 100)}% of max_tokens. Prices come from config/models.yaml "
-        f"(placeholders until you edit them).")
+        f"(checked on the date noted there).")
 
 
 # --------------------------------------------------------------------------

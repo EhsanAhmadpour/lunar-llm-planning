@@ -280,7 +280,7 @@ def to_pddl(inst, name, seed, attempt, charges=None):
     return "\n".join(lines) + "\n"
 
 
-def generate_one(num, size, base_seed, domain_path, out_dir, optimal_timeout, max_attempts=30000, log=print,
+def generate_one(num, size, base_seed, domain_path, out_dir, optimal_timeout, max_attempts=300000, log=print,
                  profile=DEFAULT_PROFILE):
     name = f"p{num:02d}_{size}"
     cfg = PROFILES[profile][size]
