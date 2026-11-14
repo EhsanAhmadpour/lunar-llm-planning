@@ -430,9 +430,9 @@ def estimate(models, instances, exp, root=ROOT):
 
 
 def print_estimate(rows, total_worst, total_expected, budget, out=print):
-    out(f"{"model":<16}{'tier':<8}{'episodes':>9}{'worst-case $':>14}{'expected $':>12}")
+    out(f"{'model':<16}{'tier':<8}{'episodes':>9}{'worst-case $':>14}{'expected $':>12}")
     for r in rows:
-        out(f"{r["label"]:<16}{r['tier']:<8}{r['episodes']:>9}{r['worst']:>14.2f}{r['expected']:>12.2f}")
+        out(f"{r['label']:<16}{r['tier']:<8}{r['episodes']:>9}{r['worst']:>14.2f}{r['expected']:>12.2f}")
     out(f"{'TOTAL':<22}{'':>9}{total_worst:>14.2f}{total_expected:>12.2f}")
     out(f"Budget cap: ${budget:.2f}. Worst case = every episode uses all rounds and every reply hits "
         f"max_tokens; expected = {EXPECTED_ROUNDS} calls per episode, replies use "

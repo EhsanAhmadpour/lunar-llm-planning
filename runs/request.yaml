@@ -8,4 +8,4 @@
 # note:   free text for your own records
 mode: smoke
 models: ""
-note: "test call approved by Ehsan on 14 Nov 2026"
+note: "test call approved by Ehsan on 14 Nov 2026 (2nd try: first failed before any API call, Python 3.11 syntax)"
