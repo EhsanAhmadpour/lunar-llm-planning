@@ -8,6 +8,5 @@ deepseek-think  cheap          18          1.14        0.20
 haiku-think     cheap          18          0.30        0.05
 gpt-think       cheap          18          0.68        0.12
 gemini-think    cheap          18          1.32        0.24
-sonnet-think    strong         18          4.08        0.74
-TOTAL                                   12.59        2.28
+TOTAL                                    8.51        1.54
 Budget cap: $9.00. Worst case = every episode uses all rounds and every reply hits max_tokens; expected = 1.6 calls per episode, replies use 50% of max_tokens. Prices come from config/models.yaml (checked on the date noted there).
