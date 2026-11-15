@@ -38,10 +38,13 @@ jobs:
           req = yaml.safe_load(open("runs/request.yaml")) or {}
           mode = str(req.get("mode", "estimate"))
           models = str(req.get("models") or "")
+          problems = str(req.get("problems") or "")
+          variants = str(req.get("variants") or "")
+          assert re.fullmatch(r"[A-Za-z0-9_,]*", problems + variants), "bad problems/variants"
           assert mode in ("smoke", "estimate", "full"), f"bad mode {mode!r}"
           assert re.fullmatch(r"[A-Za-z0-9_.,\-]*", models), "models may only contain letters, digits, _ . , -"
           with open(os.environ["GITHUB_OUTPUT"], "a") as f:
-              f.write(f"mode={mode}\nmodels={models}\n")
+              f.write(f"mode={mode}\nmodels={models}\nproblems={problems}\nvariants={variants}\n")
           print("mode:", mode, "| models:", models or "(all)")
           PY
 
@@ -54,9 +57,13 @@ jobs:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           MODE: ${{ steps.req.outputs.mode }}
           MODELS: ${{ steps.req.outputs.models }}
+          PROBLEMS: ${{ steps.req.outputs.problems }}
+          VARIANTS: ${{ steps.req.outputs.variants }}
         run: |
           ARGS=""
           if [ -n "$MODELS" ]; then ARGS="--models $MODELS"; fi
+          if [ -n "$PROBLEMS" ]; then ARGS="$ARGS --problems $PROBLEMS"; fi
+          if [ -n "$VARIANTS" ]; then ARGS="$ARGS --variants $VARIANTS"; fi
           case "$MODE" in
             estimate) FLAG="--estimate" ;;
             smoke)    FLAG="--smoke" ;;

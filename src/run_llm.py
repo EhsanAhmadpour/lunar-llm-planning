@@ -366,8 +366,12 @@ def run_model(ctx, model, instances, repeats_override=None, stop=None):
         try:
             n_calls += run_episode(ctx, model, inst, rep)
         except ModelUnavailable as exc:
-            ctx.log(f"  SKIPPING MODEL {model['label']}: {exc}")
-            break
+            if n_calls == 0:      # rejected before any call worked: wrong id or unsupported setting
+                ctx.log(f"  SKIPPING MODEL {model['label']}: {exc}")
+                break
+            # the model works, so this request itself was refused (e.g. the conversation no longer
+            # fits an old model's small context window): skip only this episode
+            ctx.log(f"  skipped {model['label']} {inst.variant}/{inst.name} rep{rep}: {exc}")
         except ApiError as exc:
             failures += 1
             ctx.log(f"  skipped {model['label']} {inst.variant}/{inst.name} rep{rep}: {exc}")
