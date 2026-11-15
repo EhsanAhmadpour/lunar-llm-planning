@@ -5,6 +5,9 @@ deepseek-direct,standard,12,0,1,0,6,2,0,3,0
 deepseek-think,mystery,2,2,0,0,0,0,0,0,0
 deepseek-think,rovers,1,0,0,1,0,0,0,0,0
 deepseek-think,standard,2,1,0,1,0,0,0,0,0
+gemini-think,mystery,6,0,0,1,0,0,0,2,3
+gemini-think,rovers,5,0,0,1,0,2,0,2,0
+gemini-think,standard,5,0,0,1,2,0,0,1,1
 gpt-direct,mystery,12,0,0,0,5,0,0,7,0
 gpt-direct,rovers,12,0,0,1,0,3,1,7,0
 gpt-direct,standard,12,0,0,1,6,3,0,2,0
