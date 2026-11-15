@@ -7,5 +7,5 @@
 # models: optional, comma-separated labels from config/models.yaml (empty = all)
 # note:   free text for your own records
 mode: full
-models: "deepseek-think"
-note: "DeepSeek V4.1 Flash thinking ON, 32000-token cap, approved by Ehsan on 15 Nov 2026"
+models: "gemini-think"
+note: "Gemini 3.5 Flash Lite thinking ON, 32000-token cap, approved by Ehsan on 15 Nov 2026"
