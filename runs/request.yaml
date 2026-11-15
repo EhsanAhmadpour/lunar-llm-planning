@@ -9,7 +9,7 @@
 # variants: optional, comma-separated: standard,mystery,rovers (empty = all)
 # note:     free text for your own records
 mode: full
-models: "gpt35-direct,gpt4o-direct"
+models: "opus3-direct"
 problems: ""
-variants: ""
-note: "paper models 1/2: GPT-3.5 Turbo and GPT-4o, approved by Ehsan on 15 Nov 2026"
+variants: "standard"
+note: "paper models 2/2: Claude 3 Opus on the six standard lunar missions, approved by Ehsan on 15 Nov 2026"
