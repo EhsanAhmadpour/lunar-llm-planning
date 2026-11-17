@@ -1,7 +1,7 @@
 variant,problem,size,planner,config,plan_length,time_s,valid,error
-standard,p01_small,small,fast-downward,lama-first,24,0.134,True,
-standard,p02_small,small,fast-downward,lama-first,19,0.151,True,
-standard,p03_medium,medium,fast-downward,lama-first,54,0.313,True,
-standard,p04_medium,medium,fast-downward,lama-first,35,0.238,True,
-standard,p05_large,large,fast-downward,lama-first,49,0.35,True,
-standard,p06_large,large,fast-downward,eager-greedy-ff,59,29.619,True,
+standard,p01_small,small,fast-downward,lama-first,24,0.112,True,
+standard,p02_small,small,fast-downward,lama-first,19,0.097,True,
+standard,p03_medium,medium,fast-downward,lama-first,54,0.214,True,
+standard,p04_medium,medium,fast-downward,lama-first,35,0.153,True,
+standard,p05_large,large,fast-downward,lama-first,49,0.256,True,
+standard,p06_large,large,fast-downward,eager-greedy-ff,59,29.241,True,

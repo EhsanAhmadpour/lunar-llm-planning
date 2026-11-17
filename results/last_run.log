@@ -1,2 +1,4 @@
-  SKIPPING MODEL opus3-direct: HTTP 404 from OpenRouter for model 'anthropic/claude-3-opus' (wrong id, or a setting such as 'reasoning' is not supported)
-Done: 0 API calls; total spend so far $3.6329 of $8.50.
+model           tier     episodes  worst-case $  expected $
+nemo-direct     cheap          12          0.11        0.02
+TOTAL                                    0.11        0.02
+Budget cap: $8.50. Worst case = every episode uses all rounds and every reply hits max_tokens; expected = 1.6 calls per episode, replies use 50% of max_tokens. Prices come from config/models.yaml (checked on the date noted there).
