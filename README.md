@@ -58,18 +58,48 @@ longer (reference plans of 33 to 127 steps) and are used in published LLM-planni
 **Thinking on or off.** `config/models.yaml` runs the same cheap models twice: without thinking (`-direct`,
 the model must write the plan immediately) and with thinking (`-think`).
 
+## Part 2: LLM vs non-LLM, starting from plain English (added 17 Nov 2026)
+
+The first experiment always gave the model a finished PDDL problem. Section 3 of the report describes
+systems in which an LLM receives the mission in **natural language**. So the six lunar missions are also
+written as plain-English operator briefings (`problems/nl/*.txt`, made by `src/describe.py`; a test proves
+every briefing contains exactly the facts of its PDDL problem), and two more conditions use them:
+
+| Condition (variant) | Who writes the plan | Pattern in Section 3 |
+|---|---|---|
+| hand-written PDDL + classical planner (`results/baseline_fd.csv`) | Fast Downward, no LLM | CADRE (Rabideau et al. 2025) |
+| `standard` (the first experiment) | the LLM, from the PDDL problem | LLM-Modulo (Section 2) |
+| `nl-plan` | the LLM, from the English briefing | LLM-KGFP (Chen et al. 2026): LLM plans, the rover checks |
+| `nl-translate` | the LLM writes the **PDDL problem** from the briefing, Fast Downward plans | E et al. (2026): LLM decomposes, deterministic layers plan and check |
+
+All conditions get the same domain file and the same checker: the final plan is run by our validator on the
+hand-written problem. With feedback, `nl-plan` gets the validator's sentence (as before); `nl-translate` gets
+"could not be read" / "the planner found no plan" / "the planner's plan failed on the real mission: ...",
+the equivalent of E et al.'s simulator feedback. Details are in `src/translate.py`. Fast Downward is used
+instead of pyperplan in this pipeline because pyperplan's search time depends on the fact order and hash seed
+(it times out on a perfect copy of p05_large with most seeds); see `src/fd.py`. Table T3 in
+`results/tables.md` shows translation quality, T4 the LLM vs non-LLM comparison.
+
+```bash
+python -m src.describe --check                                          # briefings still match the PDDL
+python -m src.run_llm --estimate --variants nl-translate,nl-plan        # cost table
+```
+
 ## Folder map
 
 ```
 domain/            lunar.pddl (standard), mystery.pddl + mystery_mapping.json (renamed copy and the name table)
 problems/standard/ p01_small.pddl ... p06_large.pddl (+ .json metadata: seed, checks, reference-plan info)
 problems/mystery/  the same six problems with mystery names
+problems/nl/       the same six missions as plain-English briefings (src/describe.py)
 problems/rovers/   six IPC Rovers tasks (r01_small ... r06_large) + metadata
 pilot/             the free pilot rounds that shaped the problem sets (read pilot/README.md)
 problems/reference_plans/  plans found by pyperplan (standard and *.mystery.plan)
-prompts/           direct.txt (first prompt), feedback.txt (verifier message)
+prompts/           direct.txt (first prompt), feedback.txt (verifier message), nl_plan.txt, nl_translate.txt,
+                   nl_translate_feedback.txt
 config/            models.yaml (which models, prices), experiment.yaml (budget, rounds, ...)
-src/               generate_problems.py, obfuscate.py, validate.py, run_baseline.py, run_llm.py, manual.py, analyze.py
+src/               generate_problems.py, obfuscate.py, validate.py, run_baseline.py, run_llm.py, manual.py, analyze.py,
+                   describe.py (briefings), translate.py + fd.py (nl-translate pipeline, Fast Downward)
 tests/             pytest tests (no network needed)
 results/           raw/ (every request+response), spend.json, baseline.csv, summary.csv, tables.md
 figures/           validity.png

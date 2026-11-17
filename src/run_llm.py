@@ -36,7 +36,8 @@ from pathlib import Path
 import requests
 import yaml
 
-from .pddl_utils import ROOT, domain_for, read_text, strip_comments
+from .pddl_utils import NL_VARIANTS, ROOT, briefing_for, domain_for, problem_for, read_text, strip_comments
+from .translate import check_translation
 from .validate import validate_text, default_mapping_for
 
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
@@ -66,11 +67,11 @@ class ModelUnavailable(Exception):
 # --------------------------------------------------------------------------
 @dataclass
 class Instance:
-    variant: str      # standard | mystery
+    variant: str      # standard | mystery | rovers | nl-plan | nl-translate
     name: str         # e.g. p01_small
     size: str         # small | medium | large
     domain: Path
-    problem: Path
+    problem: Path     # the PDDL problem replies are checked against (for nl-*: problems/standard/...)
 
 
 def load_yaml(path):
@@ -102,11 +103,14 @@ def list_instances(variants=("standard", "mystery"), problems="all", root=ROOT):
     out = []
     for variant in variants:
         domain = domain_for(variant, root)
-        pdir = root / "problems" / variant
-        for p in sorted(pdir.glob("[pr][0-9]*.pddl")):
-            if problems != "all" and p.stem not in problems:
+        if variant in NL_VARIANTS:   # one instance per briefing; checked against the standard problem
+            names = sorted(p.stem for p in (root / "problems" / "nl").glob("p[0-9]*.txt"))
+        else:
+            names = sorted(p.stem for p in (root / "problems" / variant).glob("[pr][0-9]*.pddl"))
+        for name in names:
+            if problems != "all" and name not in problems:
                 continue
-            out.append(Instance(variant, p.stem, p.stem.split("_")[-1], domain, p))
+            out.append(Instance(variant, name, name.split("_")[-1], domain, problem_for(variant, name, root)))
     return out
 
 
@@ -120,14 +124,21 @@ def select_models(models, only=None):
 # --------------------------------------------------------------------------
 # Prompts
 # --------------------------------------------------------------------------
+PROMPTS = {"nl-plan": ("nl_plan.txt", "feedback.txt"), "nl-translate": ("nl_translate.txt", "nl_translate_feedback.txt")}
+
+
 def render_direct(inst, root=ROOT):
-    tpl = read_text(Path(root) / "prompts" / "direct.txt")
-    return (tpl.replace("{{DOMAIN}}", strip_comments(read_text(inst.domain)).strip())
-               .replace("{{PROBLEM}}", strip_comments(read_text(inst.problem)).strip()))
+    first, _ = PROMPTS.get(inst.variant, ("direct.txt", None))
+    tpl = read_text(Path(root) / "prompts" / first)
+    out = tpl.replace("{{DOMAIN}}", strip_comments(read_text(inst.domain)).strip())
+    if inst.variant in NL_VARIANTS:
+        return out.replace("{{BRIEFING}}", read_text(briefing_for(inst.name, root)).strip())
+    return out.replace("{{PROBLEM}}", strip_comments(read_text(inst.problem)).strip())
 
 
-def render_feedback(validation, root=ROOT):
-    tpl = read_text(Path(root) / "prompts" / "feedback.txt")
+def render_feedback(validation, root=ROOT, inst=None):
+    _, fb = PROMPTS.get(getattr(inst, "variant", None), (None, "feedback.txt"))
+    tpl = read_text(Path(root) / "prompts" / fb)
     return tpl.replace("{{REPORT}}", validation["error_message"] or "The plan is invalid.")
 
 
@@ -281,7 +292,12 @@ def raw_path(ctx, model, inst, rep, rnd):
             / f"rep{rep}_round{rnd}.json")
 
 
-def validate_response(inst, text):
+def validate_response(inst, text, results_dir=None):
+    """Check one reply. nl-translate replies are PDDL problems: they go through the planner
+    pipeline in src/translate.py; every other reply is a plan for our validator."""
+    if inst.variant == "nl-translate":
+        cache = Path(results_dir) / "translate_cache" if results_dir else None
+        return check_translation(inst.domain, inst.problem, text, cache)
     return validate_text(inst.domain, inst.problem, text, _mapping(inst))
 
 
@@ -300,12 +316,12 @@ def pending_round(ctx, model, inst, rep):
         path = raw_path(ctx, model, inst, rep, rnd)
         if path.exists():
             rec = json.loads(path.read_text())
-            res = validate_response(inst, rec["response_text"])
+            res = validate_response(inst, rec["response_text"], ctx.results_dir)
             if res["valid"] or rnd == ctx.max_rounds:
                 return None
             messages = rec["messages"] + [
                 {"role": "assistant", "content": rec["response_text"]},
-                {"role": "user", "content": render_feedback(res, ctx.root)},
+                {"role": "user", "content": render_feedback(res, ctx.root, inst)},
             ]
             continue
         if rnd == 0:
@@ -350,7 +366,7 @@ def run_episode(ctx, model, inst, rep):
         finally:
             ctx.tracker.release(worst)
         calls += 1
-        res = validate_response(inst, out["text"])
+        res = validate_response(inst, out["text"], ctx.results_dir)
         ctx.log(f"  {model['label']} {inst.variant}/{inst.name} rep{rep} round{rnd}: "
                 f"{'VALID' if res['valid'] else res['error_category']}  "
                 f"(cost ${out['cost']:.4f}, total ${ctx.tracker.total:.4f})")
@@ -450,7 +466,7 @@ def print_estimate(rows, total_worst, total_expected, budget, out=print):
 def add_filter_args(ap):
     ap.add_argument("--models", help="comma-separated model labels (or ids)")
     ap.add_argument("--problems", help="comma-separated problem names, e.g. p01_small,p03_medium")
-    ap.add_argument("--variants", help="comma-separated: standard,mystery")
+    ap.add_argument("--variants", help="comma-separated: standard,mystery,rovers,nl-plan,nl-translate")
     ap.add_argument("--config-dir", default=None)
     ap.add_argument("--results-dir", default=None)
 

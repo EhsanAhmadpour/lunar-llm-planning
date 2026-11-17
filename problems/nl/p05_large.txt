@@ -1,0 +1,18 @@
+MISSION BRIEFING p05_large
+
+Team: three rovers, rover1, rover2 and rover3. The map has fourteen waypoints, w1 to w14.
+- rover1 carries a soil sampler. It starts at w1 with battery level b3, and its sample store is empty.
+- rover2 carries a camera and a soil sampler. It starts at w1 with battery level b3, and its sample store is empty.
+- rover3 carries a camera. It starts at w1 with battery level b3, and its sample store is empty.
+
+Driving. Routes are rover-specific, and only the routes listed here exist.
+- rover1 can drive both ways on w1-w2, w1-w5, w1-w6, w2-w3, w2-w4, w2-w8, w4-w5, w4-w9, w5-w7, w7-w8, w8-w10, w8-w11, w8-w12 and w12-w13; and one way only on w8->w5 and w11->w4 (not back).
+- rover2 can drive both ways on w1-w10, w2-w3, w4-w5, w4-w7, w4-w11, w5-w8, w8-w10, w8-w11, w8-w12, w12-w13 and w13-w14; and one way only on w2->w1, w2->w4, w2->w8, w5->w1, w5->w7 and w6->w1 (not back).
+- rover3 can drive both ways on w1-w2, w1-w5, w1-w6, w1-w10, w2-w8, w5-w7, w5-w8, w8-w12 and w12-w13; and one way only on w2->w3, w4->w2, w4->w9 and w5->w4 (not back).
+
+Battery. Every rover's battery has four levels: b0 (empty), b1, b2, b3 (full). Each drive and each sample collection uses one level, so a rover at b0 can do neither. Taking or sending an image, and sending a sample, costs nothing.
+Sunlight. Only w8 and w13 are sunlit. A rover at a sunlit waypoint can recharge straight to full, but only while that waypoint still has a recharge left, and each recharge uses one up for good. Available recharges: w8 has six (c1, c2, c3, c4, c5 and c6); w13 has four (c7, c8, c9 and c10). There are none anywhere else.
+Communication. Data can be sent to Earth only from w2, w5, w7 and w8.
+Science sites. Soil samples can be collected at w2, w3, w7, w13 and w14. Image targets are w4, w5, w6, w8, w10 and w11. A rover can hold one sample at a time; sending it to Earth empties the store again.
+
+Mission goal. Get the soil samples from w2, w7, w13 and w14 and images of w4, w5, w6, w8 and w11 sent to Earth. Any rover may do any part it is equipped for.

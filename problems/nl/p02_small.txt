@@ -1,0 +1,14 @@
+MISSION BRIEFING p02_small
+
+Team: one rover, rover1. The map has seven waypoints, w1 to w7.
+- rover1 carries a camera and a soil sampler. It starts at w1 with battery level b3, and its sample store is empty.
+
+Driving. Routes are rover-specific, and only the routes listed here exist.
+- rover1 can drive both ways on w1-w3, w3-w4, w3-w6, w4-w5 and w5-w7; and one way only on w1->w2 and w2->w7 (not back).
+
+Battery. Every rover's battery has four levels: b0 (empty), b1, b2, b3 (full). Each drive and each sample collection uses one level, so a rover at b0 can do neither. Taking or sending an image, and sending a sample, costs nothing.
+Sunlight. Only w2 and w4 are sunlit. A rover at a sunlit waypoint can recharge straight to full, but only while that waypoint still has a recharge left, and each recharge uses one up for good. Available recharges: w2 has one (c1); w4 has two (c2 and c3). There are none anywhere else.
+Communication. Data can be sent to Earth only from w7.
+Science sites. Soil samples can be collected at w2, w4 and w7. Image targets are w3, w5 and w6. A rover can hold one sample at a time; sending it to Earth empties the store again.
+
+Mission goal. Get the soil samples from w2 and w4 and images of w3 and w5 sent to Earth. Any rover may do any part it is equipped for.

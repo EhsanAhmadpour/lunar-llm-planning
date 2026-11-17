@@ -1,0 +1,5 @@
+Your problem file was checked:
+
+{{REPORT}}
+
+Please reply with a corrected, complete problem file (the whole file, not only the fix). Use the same format: only a fenced block that starts with ```pddl and ends with ```.

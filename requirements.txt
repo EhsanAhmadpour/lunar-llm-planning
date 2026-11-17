@@ -3,3 +3,4 @@ requests
 pyyaml
 matplotlib
 pytest
+up-fast-downward==1.0.0   # Fast Downward planner binary, used by the nl-translate pipeline (src/fd.py)

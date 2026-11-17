@@ -2,6 +2,10 @@
 
 Usage:  python -m src.run_baseline
 
+Also runs Fast Downward, the planner of the nl-translate pipeline (src/translate.py), on the
+hand-written standard lunar problems: the non-LLM condition "hand-written model + classical planner"
+(results/baseline_fd.csv).
+
 Every plan must be valid (exit code 1 otherwise). Writes results/baseline.csv.
 Search method per problem is the one recorded in the problem's JSON metadata
 (A* + LM-cut if it was optimal, else GBFS + hFF), so standard and mystery
@@ -14,6 +18,7 @@ import sys
 from .pddl_utils import ROOT
 from .planning import ensure_fixed_hash_seed, run_search
 from .run_llm import list_instances
+from .translate import solve_canonical
 from .validate import validate_text, default_mapping_for
 
 FIELDS = ["variant", "problem", "size", "search", "heuristic", "optimal", "plan_length", "time_s",
@@ -45,6 +50,20 @@ def main():
         w = csv.DictWriter(f, fieldnames=FIELDS)
         w.writeheader()
         w.writerows(rows)
+    fd_rows = []
+    for inst in list_instances(("standard",)):
+        res = solve_canonical(inst.domain, inst.problem)
+        v = validate_text(inst.domain, inst.problem, "\n".join(res["plan"] or []), None) if res["plan"] else None
+        row = dict(variant="standard", problem=inst.name, size=inst.size, planner="fast-downward", config=res.get("config"),
+                   plan_length=len(res["plan"] or []) or "", time_s=round(res["time_s"], 3),
+                   valid=bool(v and v["valid"]), error="" if v else f"planner status: {res['status']}")
+        all_valid &= row["valid"]
+        fd_rows.append(row)
+        print(f"FD       {inst.name:<12}len={row['plan_length']!s:<4}{row['time_s']:>8}s valid={row['valid']}")
+    with open(out_dir / "baseline_fd.csv", "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=list(fd_rows[0]))
+        w.writeheader()
+        w.writerows(fd_rows)
     if not all_valid:
         print("ERROR: some baseline plans are not valid")
         return 1

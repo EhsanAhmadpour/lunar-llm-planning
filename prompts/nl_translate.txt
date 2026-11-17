@@ -1,0 +1,13 @@
+You are helping a mission planner. Below are a PDDL domain and a mission briefing in plain English. Write the PDDL problem file for this mission and this domain, so that a classical planner can solve it. Do not write a plan.
+
+Rules for your answer:
+- Output ONLY the problem file, inside a fenced block that starts with ```pddl and ends with ```.
+- Use (:domain lunar), declare every object with its type, and use the object names from the briefing.
+- The :init must contain every fact the briefing states, and nothing else. The :goal must be exactly the mission goal.
+- Do not write anything else.
+
+DOMAIN:
+{{DOMAIN}}
+
+MISSION BRIEFING:
+{{BRIEFING}}

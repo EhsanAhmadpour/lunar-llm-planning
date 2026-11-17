@@ -40,7 +40,7 @@ jobs:
           models = str(req.get("models") or "")
           problems = str(req.get("problems") or "")
           variants = str(req.get("variants") or "")
-          assert re.fullmatch(r"[A-Za-z0-9_,]*", problems + variants), "bad problems/variants"
+          assert re.fullmatch(r"[A-Za-z0-9_,\-]*", problems + variants), "bad problems/variants"
           assert mode in ("smoke", "estimate", "full"), f"bad mode {mode!r}"
           assert re.fullmatch(r"[A-Za-z0-9_.,\-]*", models), "models may only contain letters, digits, _ . , -"
           with open(os.environ["GITHUB_OUTPUT"], "a") as f:

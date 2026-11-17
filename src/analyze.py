@@ -14,6 +14,9 @@ Definitions
                    (valid at some round, or all rounds used); unfinished ones are left out.
   rounds to valid  0 if the direct plan was valid, 1 after one feedback message, ...
   length ratio     length of the final valid plan / length of the reference plan
+  nl-translate     the reply is a PDDL problem, not a plan: "valid" means the plan Fast Downward found
+                   for it is valid on the hand-written problem (src/translate.py); "exact" means its
+                   facts equal the hand-written problem's facts
 """
 import csv
 import json
@@ -22,10 +25,11 @@ import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
-from .pddl_utils import ROOT, domain_for
-from .validate import validate_text, default_mapping_for
+from .pddl_utils import ROOT, domain_for, problem_for
+from .run_llm import Instance, validate_response
 
-CATEGORIES = ["no_plan", "syntax", "terrain", "battery", "communication", "equipment", "state", "goal_not_reached"]
+CATEGORIES = ["no_plan", "syntax", "unsolvable", "timeout", "terrain", "battery", "communication", "equipment",
+              "state", "goal_not_reached"]
 SIZES = ["small", "medium", "large"]
 _FNAME = re.compile(r"rep(\d+)_round(\d+)\.json$")
 
@@ -46,17 +50,16 @@ def load_episodes(results_dir, root=ROOT, max_rounds=3):
             groups[(rec["model_label"], rec["variant"], rec["problem"], int(m.group(1)))][int(m.group(2))] = rec
     episodes = []
     for (label, variant, problem, rep), rounds in sorted(groups.items()):
-        domain = domain_for(variant, root)
-        problem_file = Path(root) / "problems" / variant / f"{problem}.pddl"
+        problem_file = problem_for(variant, problem, root)
         if not problem_file.exists() or 0 not in rounds:
             continue
-        mapping = default_mapping_for(domain)
+        inst = Instance(variant, problem, problem.split("_")[-1], domain_for(variant, root), problem_file)
         results = {}
         for r in sorted(rounds):
             if r > max_rounds:
                 continue
-            results[r] = validate_text(domain, problem_file, rounds[r]["response_text"], mapping)
-            if results[r]["plan_length"] == 0:
+            results[r] = validate_response(inst, rounds[r]["response_text"], results_dir)
+            if variant != "nl-translate" and results[r]["plan_length"] == 0:
                 # the reply contains no plan at all (the model declined, or wrote only prose):
                 # counted apart from real syntax errors
                 results[r]["error_category"] = "no_plan"
@@ -123,6 +126,51 @@ def t2_rows(episodes):
         for cat in CATEGORIES:
             row[cat] = c.get(cat, 0)
         rows.append(row)
+    return rows
+
+
+def t3_rows(episodes):
+    """nl-translate: how good are the PDDL problems the models wrote (round 0), and how often does the
+    LLM-translates / planner-plans pipeline give a valid plan."""
+    rows = []
+    for model in sorted({e["model"] for e in episodes if e["variant"] == "nl-translate"}):
+        es = [e for e in episodes if e["model"] == model and e["variant"] == "nl-translate"]
+        fin = [e for e in es if e["finished"]]
+        parsed = [e["direct"] for e in es if e["direct"].get("parsed")]
+        errs = [len(d["missing_init"]) + len(d["extra_init"]) + len(d["missing_goal"]) + len(d["extra_goal"]) for d in parsed]
+        rows.append(dict(
+            model=model, n_episodes=len(es),
+            pct_readable_round0=_pct(len(parsed), len(es)),
+            pct_exact_round0=_pct(sum(d["exact"] for d in parsed), len(es)),
+            mean_wrong_facts_round0=_mean(errs),
+            pct_valid_round0=_pct(sum(e["direct"]["valid"] for e in es), len(es)),
+            n_finished=len(fin), pct_valid_with_verifier=_pct(sum(e["solved_round"] is not None for e in fin), len(fin))))
+    return rows
+
+
+def t4_rows(episodes, results_dir):
+    """LLM vs non-LLM on the six lunar missions: valid plans first / with feedback, per condition."""
+    def cell(es):
+        fin = [e for e in es if e["finished"]]
+        if not es:
+            return ""
+        return (f"{sum(e['direct']['valid'] for e in es)} → {sum(e['solved_round'] is not None for e in fin)} "
+                f"of {len(es)}" + ("" if len(fin) == len(es) else f" ({len(es) - len(fin)} unfinished)"))
+    rows = []
+    for path, label in ((Path(results_dir) / "baseline_fd.csv", "Fast Downward (no LLM)"),
+                        (Path(results_dir) / "baseline.csv", "pyperplan (no LLM)")):
+        if path.exists():
+            b = [r for r in csv.DictReader(path.open()) if r["variant"] == "standard"]
+            ok = sum(r["valid"] == "True" for r in b)
+            rows.append(dict(model=label, **{"PDDL problem, LLM plans": "", "English, LLM plans": "",
+                             "English, LLM writes PDDL, planner plans": "", "hand-written PDDL, planner plans": f"{ok} of {len(b)}"}))
+    lunar = [e for e in episodes if e["variant"] in ("standard", "nl-plan", "nl-translate")]
+    for model in sorted({e["model"] for e in lunar}):
+        pick = lambda v: [e for e in lunar if e["model"] == model and e["variant"] == v]
+        rows.append({"model": model, "PDDL problem, LLM plans": cell(pick("standard")),
+                     "English, LLM plans": cell(pick("nl-plan")),
+                     "English, LLM writes PDDL, planner plans": cell(pick("nl-translate")),
+                     "hand-written PDDL, planner plans": ""})
     return rows
 
 
@@ -213,6 +261,13 @@ def main(argv=None, root=ROOT, results_dir=None, figures_dir=None):
     t2_cols = ["model", "variant", "n_invalid_round0"] + CATEGORIES
     write_csv(results_dir / "summary.csv", t1, t1_cols)
     write_csv(results_dir / "error_categories.csv", t2, t2_cols)
+    t3 = t3_rows(episodes)
+    t3_cols = ["model", "n_episodes", "pct_readable_round0", "pct_exact_round0", "mean_wrong_facts_round0",
+               "pct_valid_round0", "n_finished", "pct_valid_with_verifier"]
+    write_csv(results_dir / "translation.csv", t3, t3_cols)
+    t4 = t4_rows(episodes, results_dir)
+    t4_cols = ["model", "hand-written PDDL, planner plans", "PDDL problem, LLM plans", "English, LLM plans",
+               "English, LLM writes PDDL, planner plans"]
     md = ["# Results tables (generated by src/analyze.py)\n",
           f"Episodes analysed: {len(episodes)}. Max feedback rounds: {max_rounds}.\n",
           "## T1. Validity per model and variant (all sizes)\n",
@@ -220,6 +275,13 @@ def main(argv=None, root=ROOT, results_dir=None, figures_dir=None):
           "## T1 by problem size\n", md_table([r for r in t1 if r["size"] != "all"], t1_cols),
           "## T2. First-error category at round 0 (counts among invalid direct plans)\n",
           md_table(t2, t2_cols),
+          "## T3. nl-translate: the PDDL problems the models wrote from the English briefings\n",
+          "readable = parsed and fits the domain; exact = same facts as the hand-written problem; "
+          "wrong facts = missing + extra facts (readable replies only); valid = the planner's plan for it is valid "
+          "on the real mission.\n",
+          md_table(t3, t3_cols),
+          "## T4. LLM vs non-LLM on the six lunar missions (valid at the first attempt → valid with feedback, of N episodes)\n",
+          md_table(t4, t4_cols),
           "## Baseline (pyperplan reference plans)\n", baseline_md(results_dir)]
     (results_dir / "tables.md").write_text("\n".join(md))
     make_figure(t1, figures_dir / "validity.png")

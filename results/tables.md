@@ -122,55 +122,77 @@ Episodes analysed: 234. Max feedback rounds: 3.
 
 ## T2. First-error category at round 0 (counts among invalid direct plans)
 
-| model | variant | n_invalid_round0 | no_plan | syntax | terrain | battery | communication | equipment | state | goal_not_reached |
-|---|---|---|---|---|---|---|---|---|---|---|
-| deepseek-direct | mystery | 12 | 0 | 0 | 0 | 2 | 1 | 0 | 9 | 0 |
-| deepseek-direct | rovers | 12 | 0 | 1 | 2 | 0 | 1 | 1 | 7 | 0 |
-| deepseek-direct | standard | 12 | 0 | 1 | 0 | 6 | 2 | 0 | 3 | 0 |
-| deepseek-think | mystery | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| deepseek-think | rovers | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |
-| deepseek-think | standard | 2 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |
-| gemini-think | mystery | 6 | 0 | 0 | 1 | 0 | 0 | 0 | 2 | 3 |
-| gemini-think | rovers | 5 | 0 | 0 | 1 | 0 | 2 | 0 | 2 | 0 |
-| gemini-think | standard | 5 | 0 | 0 | 1 | 2 | 0 | 0 | 1 | 1 |
-| gpt-direct | mystery | 12 | 0 | 0 | 0 | 5 | 0 | 0 | 7 | 0 |
-| gpt-direct | rovers | 12 | 0 | 0 | 1 | 0 | 3 | 1 | 7 | 0 |
-| gpt-direct | standard | 12 | 0 | 0 | 1 | 6 | 3 | 0 | 2 | 0 |
-| gpt-think | mystery | 6 | 1 | 0 | 0 | 5 | 0 | 0 | 0 | 0 |
-| gpt-think | rovers | 5 | 0 | 0 | 1 | 0 | 1 | 0 | 3 | 0 |
-| gpt-think | standard | 5 | 2 | 0 | 1 | 2 | 0 | 0 | 0 | 0 |
-| gpt4o-direct | mystery | 6 | 0 | 0 | 0 | 0 | 0 | 0 | 6 | 0 |
-| gpt4o-direct | rovers | 6 | 0 | 0 | 1 | 0 | 2 | 1 | 2 | 0 |
-| gpt4o-direct | standard | 6 | 0 | 0 | 1 | 3 | 0 | 0 | 2 | 0 |
-| haiku-direct | mystery | 12 | 4 | 0 | 1 | 4 | 1 | 0 | 1 | 1 |
-| haiku-direct | rovers | 12 | 5 | 0 | 2 | 0 | 1 | 1 | 3 | 0 |
-| haiku-direct | standard | 12 | 0 | 0 | 1 | 2 | 0 | 2 | 7 | 0 |
-| haiku-think | mystery | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| haiku-think | rovers | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 |
-| haiku-think | standard | 2 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |
-| nemo-direct | mystery | 12 | 0 | 8 | 1 | 3 | 0 | 0 | 0 | 0 |
-| nemo-direct | rovers | 12 | 0 | 5 | 6 | 0 | 0 | 0 | 1 | 0 |
-| nemo-direct | standard | 12 | 0 | 3 | 6 | 2 | 0 | 0 | 1 | 0 |
+| model | variant | n_invalid_round0 | no_plan | syntax | unsolvable | timeout | terrain | battery | communication | equipment | state | goal_not_reached |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| deepseek-direct | mystery | 12 | 0 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 9 | 0 |
+| deepseek-direct | rovers | 12 | 0 | 1 | 0 | 0 | 2 | 0 | 1 | 1 | 7 | 0 |
+| deepseek-direct | standard | 12 | 0 | 1 | 0 | 0 | 0 | 6 | 2 | 0 | 3 | 0 |
+| deepseek-think | mystery | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| deepseek-think | rovers | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |
+| deepseek-think | standard | 2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |
+| gemini-think | mystery | 6 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 2 | 3 |
+| gemini-think | rovers | 5 | 0 | 0 | 0 | 0 | 1 | 0 | 2 | 0 | 2 | 0 |
+| gemini-think | standard | 5 | 0 | 0 | 0 | 0 | 1 | 2 | 0 | 0 | 1 | 1 |
+| gpt-direct | mystery | 12 | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 7 | 0 |
+| gpt-direct | rovers | 12 | 0 | 0 | 0 | 0 | 1 | 0 | 3 | 1 | 7 | 0 |
+| gpt-direct | standard | 12 | 0 | 0 | 0 | 0 | 1 | 6 | 3 | 0 | 2 | 0 |
+| gpt-think | mystery | 6 | 1 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 |
+| gpt-think | rovers | 5 | 0 | 0 | 0 | 0 | 1 | 0 | 1 | 0 | 3 | 0 |
+| gpt-think | standard | 5 | 2 | 0 | 0 | 0 | 1 | 2 | 0 | 0 | 0 | 0 |
+| gpt4o-direct | mystery | 6 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 6 | 0 |
+| gpt4o-direct | rovers | 6 | 0 | 0 | 0 | 0 | 1 | 0 | 2 | 1 | 2 | 0 |
+| gpt4o-direct | standard | 6 | 0 | 0 | 0 | 0 | 1 | 3 | 0 | 0 | 2 | 0 |
+| haiku-direct | mystery | 12 | 4 | 0 | 0 | 0 | 1 | 4 | 1 | 0 | 1 | 1 |
+| haiku-direct | rovers | 12 | 5 | 0 | 0 | 0 | 2 | 0 | 1 | 1 | 3 | 0 |
+| haiku-direct | standard | 12 | 0 | 0 | 0 | 0 | 1 | 2 | 0 | 2 | 7 | 0 |
+| haiku-think | mystery | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| haiku-think | rovers | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| haiku-think | standard | 2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |
+| nemo-direct | mystery | 12 | 0 | 8 | 0 | 0 | 1 | 3 | 0 | 0 | 0 | 0 |
+| nemo-direct | rovers | 12 | 0 | 5 | 0 | 0 | 6 | 0 | 0 | 0 | 1 | 0 |
+| nemo-direct | standard | 12 | 0 | 3 | 0 | 0 | 6 | 2 | 0 | 0 | 1 | 0 |
+
+## T3. nl-translate: the PDDL problems the models wrote from the English briefings
+
+readable = parsed and fits the domain; exact = same facts as the hand-written problem; wrong facts = missing + extra facts (readable replies only); valid = the planner's plan for it is valid on the real mission.
+
+_no data yet_
+
+## T4. LLM vs non-LLM on the six lunar missions (valid at the first attempt → valid with feedback, of N episodes)
+
+| model | hand-written PDDL, planner plans | PDDL problem, LLM plans | English, LLM plans | English, LLM writes PDDL, planner plans |
+|---|---|---|---|---|
+| Fast Downward (no LLM) | 6 of 6 |  |  |  |
+| pyperplan (no LLM) | 6 of 6 |  |  |  |
+| deepseek-direct |  | 0 → 0 of 12 |  |  |
+| deepseek-think |  | 4 → 5 of 6 |  |  |
+| gemini-think |  | 1 → 3 of 6 |  |  |
+| gpt-direct |  | 0 → 0 of 12 |  |  |
+| gpt-think |  | 1 → 4 of 6 |  |  |
+| gpt4o-direct |  | 0 → 0 of 6 |  |  |
+| haiku-direct |  | 0 → 0 of 12 |  |  |
+| haiku-think |  | 4 → 6 of 6 |  |  |
+| nemo-direct |  | 0 → 0 of 12 |  |  |
 
 ## Baseline (pyperplan reference plans)
 
 | variant | problem | plan_length | optimal | time_s | valid |
 |---|---|---|---|---|---|
-| standard | p01_small | 22 | True | 12.618 | True |
-| standard | p02_small | 19 | True | 0.418 | True |
-| standard | p03_medium | 53 | False | 0.775 | True |
-| standard | p04_medium | 35 | False | 0.081 | True |
-| standard | p05_large | 54 | False | 2.508 | True |
-| standard | p06_large | 59 | False | 2.342 | True |
-| mystery | p01_small | 22 | True | 12.413 | True |
-| mystery | p02_small | 19 | True | 0.386 | True |
-| mystery | p03_medium | 53 | False | 10.193 | True |
-| mystery | p04_medium | 35 | False | 0.08 | True |
-| mystery | p05_large | 53 | False | 1.91 | True |
-| mystery | p06_large | 61 | False | 0.357 | True |
-| rovers | r01_small | 33 | False | 9.291 | True |
-| rovers | r02_small | 33 | False | 0.839 | True |
-| rovers | r03_medium | 49 | False | 2.145 | True |
-| rovers | r04_medium | 70 | False | 19.618 | True |
-| rovers | r05_large | 101 | False | 36.982 | True |
-| rovers | r06_large | 127 | False | 29.516 | True |
+| standard | p01_small | 22 | True | 11.979 | True |
+| standard | p02_small | 19 | True | 0.365 | True |
+| standard | p03_medium | 53 | False | 0.694 | True |
+| standard | p04_medium | 35 | False | 0.079 | True |
+| standard | p05_large | 54 | False | 2.327 | True |
+| standard | p06_large | 59 | False | 2.091 | True |
+| mystery | p01_small | 22 | True | 11.972 | True |
+| mystery | p02_small | 19 | True | 0.448 | True |
+| mystery | p03_medium | 53 | False | 8.885 | True |
+| mystery | p04_medium | 35 | False | 0.072 | True |
+| mystery | p05_large | 53 | False | 1.872 | True |
+| mystery | p06_large | 61 | False | 0.474 | True |
+| rovers | r01_small | 33 | False | 8.318 | True |
+| rovers | r02_small | 33 | False | 0.799 | True |
+| rovers | r03_medium | 49 | False | 1.911 | True |
+| rovers | r04_medium | 70 | False | 15.303 | True |
+| rovers | r05_large | 101 | False | 30.976 | True |
+| rovers | r06_large | 127 | False | 23.991 | True |
