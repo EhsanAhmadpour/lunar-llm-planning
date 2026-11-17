@@ -1,0 +1,20 @@
+{
+ "valid": false,
+ "goal_reached": false,
+ "first_error_step": null,
+ "error_category": "no_plan",
+ "error_message": "No problem file found: expected a fenced block that starts with ```pddl and contains (define (problem ...) ...).",
+ "plan_length": 0,
+ "unmet_goals": [],
+ "steps_executed": 0,
+ "failed_preconditions": [],
+ "parsed": false,
+ "exact": false,
+ "missing_init": [],
+ "extra_init": [],
+ "missing_goal": [],
+ "extra_goal": [],
+ "planner_status": null,
+ "planner_time_s": null,
+ "plan": null
+}

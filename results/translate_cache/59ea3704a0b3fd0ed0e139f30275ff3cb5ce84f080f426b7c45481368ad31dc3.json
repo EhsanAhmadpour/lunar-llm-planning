@@ -1,0 +1,20 @@
+{
+ "valid": false,
+ "goal_reached": false,
+ "first_error_step": null,
+ "error_category": "syntax",
+ "error_message": "The planner could not read your problem file: Error found invalid keyword when parsing InitStmt",
+ "plan_length": 0,
+ "unmet_goals": [],
+ "steps_executed": 0,
+ "failed_preconditions": [],
+ "parsed": false,
+ "exact": false,
+ "missing_init": [],
+ "extra_init": [],
+ "missing_goal": [],
+ "extra_goal": [],
+ "planner_status": null,
+ "planner_time_s": null,
+ "plan": null
+}

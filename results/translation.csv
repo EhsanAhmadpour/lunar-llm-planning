@@ -1,2 +1,9 @@
 model,n_episodes,pct_readable_round0,pct_exact_round0,mean_wrong_facts_round0,pct_valid_round0,n_finished,pct_valid_with_verifier
-nemo-direct,1,100.0,0.0,12.0,0.0,0,
+deepseek-direct,12,100.0,100.0,0.0,100.0,12,100.0
+deepseek-think,6,83.3,83.3,0.0,83.3,6,100.0
+gemini-think,6,100.0,100.0,0.0,100.0,6,100.0
+gpt-direct,12,100.0,91.7,0.08,91.7,12,91.7
+gpt-think,6,100.0,100.0,0.0,100.0,6,100.0
+haiku-direct,12,100.0,91.7,0.17,91.7,12,100.0
+haiku-think,6,100.0,100.0,0.0,100.0,6,100.0
+nemo-direct,12,83.3,0.0,25.6,0.0,12,0.0

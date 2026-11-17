@@ -1,0 +1,26 @@
+{
+ "valid": false,
+ "goal_reached": false,
+ "first_error_step": null,
+ "error_category": "unsolvable",
+ "error_message": "A classical planner proved that the goal cannot be reached from the initial state in your problem file.",
+ "plan_length": 0,
+ "unmet_goals": [],
+ "steps_executed": 0,
+ "failed_preconditions": [],
+ "parsed": true,
+ "exact": false,
+ "missing_init": [
+  "(below-full b0)"
+ ],
+ "extra_init": [
+  "(below-full b3)",
+  "(can-traverse rover1 w2 w1)",
+  "(can-traverse rover1 w7 w2)"
+ ],
+ "missing_goal": [],
+ "extra_goal": [],
+ "planner_status": "unsolvable",
+ "planner_time_s": 0.09,
+ "plan": null
+}

@@ -1,0 +1,22 @@
+{
+ "valid": false,
+ "goal_reached": false,
+ "first_error_step": null,
+ "error_category": "timeout",
+ "error_message": "A classical planner found no plan for your problem file within the time limit.",
+ "plan_length": 0,
+ "unmet_goals": [],
+ "steps_executed": 0,
+ "failed_preconditions": [],
+ "parsed": true,
+ "exact": false,
+ "missing_init": [
+  "(can-traverse rover2 w14 w13)"
+ ],
+ "extra_init": [],
+ "missing_goal": [],
+ "extra_goal": [],
+ "planner_status": "timeout",
+ "planner_time_s": 58.312,
+ "plan": null
+}

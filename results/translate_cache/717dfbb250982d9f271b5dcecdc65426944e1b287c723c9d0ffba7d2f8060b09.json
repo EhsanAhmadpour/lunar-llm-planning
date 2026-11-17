@@ -1,0 +1,42 @@
+{
+ "valid": false,
+ "goal_reached": false,
+ "first_error_step": null,
+ "error_category": "syntax",
+ "error_message": "Your problem file is not valid for the domain: in the init, (at rover1 w1): object 'rover1' has type object, but 'at' needs rover there.",
+ "plan_length": 0,
+ "unmet_goals": [],
+ "steps_executed": 0,
+ "failed_preconditions": [],
+ "parsed": true,
+ "exact": false,
+ "missing_init": [
+  "(below-full b0)",
+  "(can-traverse rover1 w1 w9)",
+  "(can-traverse rover1 w10 w2)",
+  "(can-traverse rover1 w11 w2)",
+  "(can-traverse rover1 w11 w7)",
+  "(can-traverse rover1 w3 w2)",
+  "(can-traverse rover1 w5 w3)",
+  "(can-traverse rover1 w5 w4)",
+  "(can-traverse rover1 w6 w3)",
+  "(can-traverse rover1 w7 w2)",
+  "(can-traverse rover1 w9 w1)",
+  "(can-traverse rover2 w10 w2)",
+  "(can-traverse rover2 w11 w7)",
+  "(can-traverse rover2 w2 w1)",
+  "(can-traverse rover2 w5 w3)",
+  "(can-traverse rover2 w5 w4)",
+  "(can-traverse rover2 w7 w2)",
+  "(can-traverse rover2 w9 w1)"
+ ],
+ "extra_init": [
+  "(below-full b3)",
+  "(can-traverse rover1 w2 w1)"
+ ],
+ "missing_goal": [],
+ "extra_goal": [],
+ "planner_status": null,
+ "planner_time_s": null,
+ "plan": null
+}
