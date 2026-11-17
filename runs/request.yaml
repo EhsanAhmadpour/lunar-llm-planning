@@ -1,15 +1,8 @@
 # Editing and pushing this file starts the "run" GitHub workflow
 # (or start it by hand from the Actions tab).
 #
-# mode:     estimate  -> print the cost table only (free)
-#           smoke     -> one cheap call to check the API key / model id works
-#           full      -> the experiment (stops at the budget in config/experiment.yaml)
-# models:   optional, comma-separated labels from config/models.yaml (empty = all)
-# problems: optional, comma-separated problem names (empty = all)
-# variants: optional, comma-separated: standard,mystery,rovers (empty = all)
-# note:     free text for your own records
-mode: full
-models: "opus3-direct"
+# mode: smoke
+models: "nemo-direct"
 problems: ""
-variants: "standard"
-note: "paper models 2/2: Claude 3 Opus on the six standard lunar missions, approved by Ehsan on 15 Nov 2026"
+variants: "nl-translate"
+note: "Part 2 smoke test (one cheap call through the new nl-translate pipeline), approved by Ehsan on 17 Nov 2026"
