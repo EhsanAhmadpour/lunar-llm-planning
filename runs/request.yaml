@@ -8,8 +8,8 @@
 # problems: optional, comma-separated problem names (empty = all)
 # variants: optional, comma-separated: standard,mystery,rovers,nl-plan,nl-translate (empty = all in experiment.yaml)
 # note:     free text for your own records
-mode: smoke
-models: "nemo-direct"
+mode: full
+models: "nemo-direct,deepseek-direct,haiku-direct,gpt-direct,deepseek-think,haiku-think,gpt-think,gemini-think"
 problems: ""
-variants: "nl-translate"
-note: "Part 2 smoke test (one cheap call through the new nl-translate pipeline), approved by Ehsan on 17 Nov 2026"
+variants: "nl-translate,nl-plan"
+note: "Part 2 full run: nl-translate and nl-plan on 8 models, approved by Ehsan on 17 Nov 2026 (expected ~$1.30-1.60)"
