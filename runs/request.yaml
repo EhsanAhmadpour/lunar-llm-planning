@@ -1,7 +1,14 @@
 # Editing and pushing this file starts the "run" GitHub workflow
 # (or start it by hand from the Actions tab).
 #
-# mode: smoke
+# mode:     estimate  -> print the cost table only (free)
+#           smoke     -> one cheap call to check the API key / model id works
+#           full      -> the experiment (stops at the budget in config/experiment.yaml)
+# models:   optional, comma-separated labels from config/models.yaml (empty = all)
+# problems: optional, comma-separated problem names (empty = all)
+# variants: optional, comma-separated: standard,mystery,rovers,nl-plan,nl-translate (empty = all in experiment.yaml)
+# note:     free text for your own records
+mode: smoke
 models: "nemo-direct"
 problems: ""
 variants: "nl-translate"
